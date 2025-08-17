@@ -1,0 +1,141 @@
+{
+  "version": 3,
+  "targets": {
+    "net9.0": {
+      "PTM.Application/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "dependencies": {
+          "PTM.Contracts": "1.0.0",
+          "PTM.Domain": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/PTM.Application.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/PTM.Application.dll": {}
+        }
+      },
+      "PTM.Contracts/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/PTM.Contracts.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/PTM.Contracts.dll": {}
+        }
+      },
+      "PTM.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/PTM.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/PTM.Domain.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "PTM.Application/1.0.0": {
+      "type": "project",
+      "path": "../PTM.Application/PTM.Application.csproj",
+      "msbuildProject": "../PTM.Application/PTM.Application.csproj"
+    },
+    "PTM.Contracts/1.0.0": {
+      "type": "project",
+      "path": "../PTM.Contracts/PTM.Contracts.csproj",
+      "msbuildProject": "../PTM.Contracts/PTM.Contracts.csproj"
+    },
+    "PTM.Domain/1.0.0": {
+      "type": "project",
+      "path": "../PTM.Domain/PTM.Domain.csproj",
+      "msbuildProject": "../PTM.Domain/PTM.Domain.csproj"
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net9.0": [
+      "PTM.Application >= 1.0.0",
+      "PTM.Domain >= 1.0.0"
+    ]
+  },
+  "packageFolders": {
+    "C:\\Users\\Mehf\\.nuget\\packages\\": {},
+    "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "D:\\Codes\\PTM\\PTM.Infrastructure\\PTM.Infrastructure.csproj",
+      "projectName": "PTM.Infrastructure",
+      "projectPath": "D:\\Codes\\PTM\\PTM.Infrastructure\\PTM.Infrastructure.csproj",
+      "packagesPath": "C:\\Users\\Mehf\\.nuget\\packages\\",
+      "outputPath": "D:\\Codes\\PTM\\PTM.Infrastructure\\obj\\",
+      "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "D:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
+      "configFilePaths": [
+        "C:\\Users\\Mehf\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
+      "originalTargetFrameworks": [
+        "net9.0"
+      ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "projectReferences": {
+            "D:\\Codes\\PTM\\PTM.Application\\PTM.Application.csproj": {
+              "projectPath": "D:\\Codes\\PTM\\PTM.Application\\PTM.Application.csproj"
+            },
+            "D:\\Codes\\PTM\\PTM.Domain\\PTM.Domain.csproj": {
+              "projectPath": "D:\\Codes\\PTM\\PTM.Domain\\PTM.Domain.csproj"
+            }
+          }
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      },
+      "SdkAnalysisLevel": "9.0.200"
+    },
+    "frameworks": {
+      "net9.0": {
+        "targetAlias": "net9.0",
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.200/PortableRuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}

@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\PTM.API.props" />
+</Project>
