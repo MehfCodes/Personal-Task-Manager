@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PTM.Infrastructure.Database;
+using PTM.Infrastructure.Repository;
 
 namespace PTM.Infrastructure;
 
@@ -11,6 +12,7 @@ public static class DependencyInjection
     {
         var connectionString = config.GetConnectionString("DefaultConnection");
         services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
+        services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
         return services;
     }
 }
