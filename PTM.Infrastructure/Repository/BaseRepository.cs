@@ -13,10 +13,11 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         this.context = context;
         dbSet = context.Set<T>();
     }
-    public async Task AddAsync(T entity)
+    public async Task<T> AddAsync(T entity)
     {
         await dbSet.AddAsync(entity);
         await context.SaveChangesAsync();
+        return entity;
     }
     
     public async Task<T?> GetByIdAsync(Guid id)
