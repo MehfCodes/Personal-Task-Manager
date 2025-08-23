@@ -1,3 +1,4 @@
+using PTM.Application;
 using PTM.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,7 @@ builder.Services.AddProblemDetails();
 
 // Custom DI
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddApplication();
 
 var app = builder.Build();
 
