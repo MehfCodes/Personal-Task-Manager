@@ -1,0 +1,9 @@
+POST http://localhost:5262/api/plan HTTP/1.1
+content-type: application/json
+
+{
+    "title": "free",
+    "description": "free plan",
+    "price":0,
+    "maxTasks":5
+}
