@@ -8,9 +8,10 @@ namespace PTM.Application.Mappers;
 public static class PlanContractMapper
 {
     public static Plan MapToPlan(this PlanRequest planRequest) {
+        
         return new Plan
         {
-            Title = (Domain.Models.PlanTitle)planRequest.Title,
+            Title = Enum.TryParse(planRequest.Title, true, out PlanTitle ParsedTitle) ? ParsedTitle : PlanTitle.Free,
             Description = planRequest.Description,
             Price = planRequest.Price,
             MaxTasks = planRequest.MaxTasks
@@ -20,7 +21,7 @@ public static class PlanContractMapper
         return new PlanResponse
         {
             Id = plan.Id,
-            Title = (Contracts.Requests.PlanTitle)plan.Title,
+            Title = plan.Title.ToString(),
             Description = plan.Description,
             Price = plan.Price,
             MaxTasks = plan.MaxTasks
