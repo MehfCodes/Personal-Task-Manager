@@ -2,8 +2,13 @@ POST http://localhost:5262/api/plan HTTP/1.1
 content-type: application/json
 
 {
-    "title": "free",
-    "description": "free plan",
-    "price":0,
-    "maxTasks":5
+    "title": "premium",
+    "description": "premium plan",
+    "price":9,
+    "maxTasks":100
 }
+
+###########################################
+
+GET  http://localhost:5262/api/plan/7cf8ac32-c43d-4925-5c1d-08dde32960c7 HTTP/1.1
+content-type: application/json
