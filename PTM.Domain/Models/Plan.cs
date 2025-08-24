@@ -2,7 +2,7 @@ using System;
 
 namespace PTM.Domain.Models;
 
-public enum PlanTitle {Free, premium, Business};
+public enum PlanTitle {Free, Premium, Business};
 public class Plan
 {
     public Guid Id { get; set; }
