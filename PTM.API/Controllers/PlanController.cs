@@ -19,9 +19,15 @@ namespace PTM.API.Controllers
         public async Task<IActionResult> Add([FromBody] PlanRequest request)
         {
             var result = await planService.AddAsync(request);
-            return Ok(result);
+            return CreatedAtAction(nameof(Get),new {id = result.Id}, result);
         }
-    //     public async Task<IActionResult> Get(Guid id){}
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> Get(Guid id)
+        {
+            var res = await planService.GetByIdAsync(id);
+            if (res is null) return NotFound("not found");
+            return Ok(res);
+        }
     //     public async Task<IActionResult> GetAll(){}
     //     public async Task<IActionResult> Update(Guid id, [FromBody] PlanRequest request){}
     //     public async Task<IActionResult> Delete(Guid id){}

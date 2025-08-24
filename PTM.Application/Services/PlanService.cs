@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using PTM.Application.Mappers;
 using PTM.Contracts.Requests;
 using PTM.Contracts.Response;
@@ -22,6 +23,12 @@ public class PlanService : IPlanService
         return record.MapToPlanResponse();
     }
 
+    public async Task<PlanResponse?> GetByIdAsync(Guid id)
+    {
+        var record = await repository.GetByIdAsync(id);
+        if (record is null) return null;
+        return record.MapToPlanResponse();
+    }
     public Task<bool> DeleteAsync(Guid id)
     {
         throw new NotImplementedException();
@@ -32,10 +39,6 @@ public class PlanService : IPlanService
         throw new NotImplementedException();
     }
 
-    public Task<PlanResponse?> GetByIdAsync(Guid id)
-    {
-        throw new NotImplementedException();
-    }
 
     public Task<PlanResponse?> UpdateAsync(PlanUpdateRequest plan)
     {
