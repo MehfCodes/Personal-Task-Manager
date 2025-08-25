@@ -1,3 +1,4 @@
+################## Create ######################
 POST http://localhost:5262/api/plan HTTP/1.1
 content-type: application/json
 
@@ -8,7 +9,37 @@ content-type: application/json
     "maxTasks":100
 }
 
-###########################################
+################## Get By Id ######################
 
 GET  http://localhost:5262/api/plan/7cf8ac32-c43d-4925-5c1d-08dde32960c7 HTTP/1.1
 content-type: application/json
+
+
+################## Get All #######################
+
+GET  http://localhost:5262/api/plan HTTP/1.1
+content-type: application/json
+
+
+################## Update ######################
+PUT  http://localhost:5262/api/plan/c0e855de-6851-406c-7861-08dde32e1dac HTTP/1.1
+content-type: application/json
+
+{
+    "title": "premium",
+    "description": "premium plan",
+    "price":9,
+    "maxTasks":100,
+    "isActive":true
+}
+
+
+################## Deactive ######################
+PATCH   http://localhost:5262/api/plan/c0e855de-6851-406c-7861-08dde32e1dac/deactive HTTP/1.1
+content-type: application/json
+
+
+################## Deactive ######################
+PATCH   http://localhost:5262/api/plan/c0e855de-6851-406c-7861-08dde32e1dac/active HTTP/1.1
+content-type: application/json
+
