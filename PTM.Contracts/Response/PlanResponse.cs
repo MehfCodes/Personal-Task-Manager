@@ -9,5 +9,6 @@ public class PlanResponse
     public string Description { get; set; } = string.Empty;
     public decimal Price { get; set; } = 0;
     public int MaxTasks { get; set; }
+    public bool IsActive { get; set; } = true;
 
 }

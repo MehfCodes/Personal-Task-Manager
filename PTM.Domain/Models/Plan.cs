@@ -10,5 +10,6 @@ public class Plan
     public string Description { get; set; } = string.Empty;
     public decimal Price { get; set; }
     public int MaxTasks { get; set; } = -1;
+    public bool IsActive { get; set; } = true;
     public ICollection<User> Users { get; set; } = [];
 }
