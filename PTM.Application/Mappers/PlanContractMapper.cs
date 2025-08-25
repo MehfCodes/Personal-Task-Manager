@@ -14,8 +14,18 @@ public static class PlanContractMapper
             Title = Enum.TryParse(planRequest.Title, true, out PlanTitle ParsedTitle) ? ParsedTitle : PlanTitle.Free,
             Description = planRequest.Description,
             Price = planRequest.Price,
-            MaxTasks = planRequest.MaxTasks
+            MaxTasks = planRequest.MaxTasks,
+            IsActive = planRequest.IsActive
         };
+    }
+    public static Plan MapToPlan(this PlanUpdateRequest planRequest, Plan plan) {
+        plan.Id = planRequest.Id;
+        plan.Title = Enum.TryParse(planRequest.Title, true, out PlanTitle ParsedTitle) ? ParsedTitle : PlanTitle.Free;
+        plan.Description = planRequest.Description ?? "";
+        plan.Price = planRequest.Price;
+        plan.MaxTasks = planRequest.MaxTasks;
+        plan.IsActive = planRequest.IsActive;
+        return plan;
     }
     public static PlanResponse MapToPlanResponse(this Plan plan) {
         return new PlanResponse
@@ -24,7 +34,9 @@ public static class PlanContractMapper
             Title = plan.Title.ToString(),
             Description = plan.Description,
             Price = plan.Price,
-            MaxTasks = plan.MaxTasks
+            MaxTasks = plan.MaxTasks,
+            IsActive = plan.IsActive
         };
     }
+    public static IEnumerable<PlanResponse> MapToPlansResponse(this IEnumerable<Plan> plans) => plans.Select(MapToPlanResponse);
 }

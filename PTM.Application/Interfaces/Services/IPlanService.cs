@@ -10,6 +10,7 @@ public interface IPlanService
     Task<PlanResponse> AddAsync(PlanRequest plan);
     Task<PlanResponse?> GetByIdAsync(Guid id);
     Task<IEnumerable<PlanResponse>> GetAllAsync();
-    Task<PlanResponse?> UpdateAsync(PlanUpdateRequest plan);
-    Task<bool> DeleteAsync(Guid id);
+    Task<PlanResponse?> UpdateAsync(Guid id, PlanUpdateRequest plan);
+    Task<bool> DeActiveAsync(Guid id);
+    Task<bool> ActivateAsync(Guid id);
 }

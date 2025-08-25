@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using PTM.Application.Interfaces.Repositories;
 using PTM.Application.Mappers;
 using PTM.Contracts.Requests;
 using PTM.Contracts.Response;
@@ -10,9 +11,9 @@ namespace PTM.Application.Services;
 
 public class PlanService : IPlanService
 {
-    private readonly IBaseRepository<Plan> repository;
+    private readonly IPlanRepository repository;
 
-    public PlanService(IBaseRepository<Plan> repository)
+    public PlanService(IPlanRepository repository)
     {
         this.repository = repository;
     }
@@ -29,19 +30,34 @@ public class PlanService : IPlanService
         if (record is null) return null;
         return record.MapToPlanResponse();
     }
-    public Task<bool> DeleteAsync(Guid id)
+    public async Task<IEnumerable<PlanResponse>> GetAllAsync()
     {
-        throw new NotImplementedException();
+        var records = await repository.GetAllAsync();
+        return records.MapToPlansResponse();
+    }
+    public async Task<PlanResponse?> UpdateAsync(Guid id, PlanUpdateRequest newPlan)
+    {
+        var record = await repository.GetByIdAsync(id);
+        if (record is null) return null;
+        newPlan.Id = record.Id;
+        var updatedPlan = newPlan.MapToPlan(record);
+        await repository.UpdateAsync(updatedPlan);
+        return updatedPlan.MapToPlanResponse();
     }
 
-    public Task<IEnumerable<PlanResponse>> GetAllAsync()
+    public async Task<bool> DeActiveAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var record = await repository.GetByIdAsync(id);
+        if (record is null) return false;
+        await repository.DeActivePlan(record);
+        return true;
     }
 
-
-    public Task<PlanResponse?> UpdateAsync(PlanUpdateRequest plan)
+    public async Task<bool> ActivateAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var record = await repository.GetByIdAsync(id);
+        if (record is null) return false;
+        await repository.ActivatePlan(record);
+        return true;
     }
 }

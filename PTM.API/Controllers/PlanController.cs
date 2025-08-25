@@ -28,8 +28,32 @@ namespace PTM.API.Controllers
             if (res is null) return NotFound("not found");
             return Ok(res);
         }
-    //     public async Task<IActionResult> GetAll(){}
-    //     public async Task<IActionResult> Update(Guid id, [FromBody] PlanRequest request){}
-    //     public async Task<IActionResult> Delete(Guid id){}
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            return Ok(await planService.GetAllAsync());
+        }
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] PlanUpdateRequest request)
+        {
+            var res = await planService.UpdateAsync(id, request);
+            if (res is null) return NotFound("not found");
+            return Ok(res);
+        }
+
+        [HttpPatch("{id:guid}/deactive")]
+        public async Task<IActionResult> DeActive(Guid id)
+        {
+            var res = await planService.DeActiveAsync(id);
+            if (!res) return BadRequest("Deactivation failed!");
+            return Ok("Deactived");
+        }
+        [HttpPatch("{id:guid}/active")]
+        public async Task<IActionResult> Activate(Guid id)
+        {
+            var res = await planService.ActivateAsync(id);
+            if (!res) return BadRequest("Activation Failed!");
+            return Ok("Activated");
+        }
     }
 }
