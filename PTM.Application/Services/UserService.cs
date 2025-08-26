@@ -1,0 +1,40 @@
+using System;
+using PTM.Application.Interfaces.Services;
+using PTM.Application.Mappers;
+using PTM.Contracts.Requests;
+using PTM.Contracts.Response;
+using PTM.Domain.Models;
+using PTM.Infrastructure.Repository;
+
+namespace PTM.Application.Services;
+
+public class UserService : IUserService
+{
+    private readonly IBaseRepository<User> repository;
+
+    public UserService(IBaseRepository<User> repository)
+    {
+        this.repository = repository;
+    }
+    public async Task<UserResponse> AddAsync(UserRequest user)
+    {
+        var newUser = user.MapToUser();
+        var record = await repository.AddAsync(newUser);
+        return record.MapToUserResponse();
+    }
+
+    public Task<IEnumerable<UserResponse>> GetAllAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<UserResponse?> GetByIdAsync(Guid id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<UserResponse?> UpdateAsync(Guid id, UserUpdateRequest user)
+    {
+        throw new NotImplementedException();
+    }
+}
