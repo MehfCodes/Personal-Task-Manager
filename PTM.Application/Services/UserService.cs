@@ -23,18 +23,22 @@ public class UserService : IUserService
         return record.MapToUserResponse();
     }
 
-    public Task<IEnumerable<UserResponse>> GetAllAsync()
+    public async Task<IEnumerable<UserResponse>> GetAllAsync() => (await repository.GetAllAsync()).MapToUsersResponse();
+
+    public async Task<UserResponse?> GetByIdAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var record = await repository.GetByIdAsync(id);
+        if (record is null) return null;
+        return record.MapToUserResponse();
     }
 
-    public Task<UserResponse?> GetByIdAsync(Guid id)
+    public async Task<UserResponse?> UpdateAsync(Guid id, UserUpdateRequest request)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task<UserResponse?> UpdateAsync(Guid id, UserUpdateRequest user)
-    {
-        throw new NotImplementedException();
+        var record = await repository.GetByIdAsync(id);
+        if (record is null) return null;
+        request.Id = record.Id;
+        var updated = request.MapToUser(record);
+        await repository.UpdateAsync(updated);
+        return updated.MapToUserResponse();
     }
 }
