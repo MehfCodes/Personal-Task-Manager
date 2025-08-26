@@ -15,6 +15,7 @@ public static class PlanContractMapper
             Description = planRequest.Description,
             Price = planRequest.Price,
             MaxTasks = planRequest.MaxTasks,
+            DurationDays = planRequest.DurationDays,
             IsActive = planRequest.IsActive
         };
     }
@@ -24,6 +25,7 @@ public static class PlanContractMapper
         plan.Description = planRequest.Description ?? "";
         plan.Price = planRequest.Price;
         plan.MaxTasks = planRequest.MaxTasks;
+        plan.DurationDays = planRequest.DurationDays;
         plan.IsActive = planRequest.IsActive;
         return plan;
     }
@@ -35,6 +37,7 @@ public static class PlanContractMapper
             Description = plan.Description,
             Price = plan.Price,
             MaxTasks = plan.MaxTasks,
+            DurationDays = plan.DurationDays,
             IsActive = plan.IsActive
         };
     }

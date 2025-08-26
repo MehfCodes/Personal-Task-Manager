@@ -9,5 +9,6 @@ public class PlanUpdateRequest
     public string? Description { get; set; }
     public decimal Price { get; set; }
     public int MaxTasks { get; set; }
+    public int DurationDays { get; set; }
     public bool IsActive { get; set; }
 }
