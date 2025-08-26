@@ -1,11 +1,30 @@
 
-################## Create Free ######################
+################## Create User ######################
 POST http://localhost:5262/api/user HTTP/1.1
 content-type: application/json
 
 {
-    "username":"mehf",
-    "email": "mehf@email.com",
-    "phoneNumber":"01236549878",
+    "username":"boy",
+    "email": "boy@email.com",
+    "phoneNumber":"09129876543",
     "password":"1234"
+}
+
+################## Get All ######################
+GET  http://localhost:5262/api/user HTTP/1.1
+content-type: application/json
+
+################## Get By Id ######################
+GET  http://localhost:5262/api/user/03edc676-f5c3-4a2f-4556-08dde4b8a5bf HTTP/1.1
+content-type: application/json
+
+
+################## Update ######################
+PUT  http://localhost:5262/api/user/ff4d7ff7-15e5-4bc3-4d82-08dde4f760e4 HTTP/1.1
+content-type: application/json
+
+{
+    "username":"boy",
+    "email": "boy2up@email.com",
+    "phoneNumber":"09129876543"
 }
