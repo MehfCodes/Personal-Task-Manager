@@ -1,0 +1,11 @@
+
+################## Create Free ######################
+POST http://localhost:5262/api/user HTTP/1.1
+content-type: application/json
+
+{
+    "username":"mehf",
+    "email": "mehf@email.com",
+    "phoneNumber":"01236549878",
+    "password":"1234"
+}
