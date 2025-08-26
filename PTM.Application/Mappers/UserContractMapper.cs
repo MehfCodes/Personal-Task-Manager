@@ -14,8 +14,14 @@ public static class UserContractMapper
             Username = request.Username,
             Email = request.Email,
             PhoneNumber = request.PhoneNumber,
-            Password = request.Password,
         };
+    }
+    public static User MapToUser(this UserUpdateRequest request, User user)
+    {
+        user.Username = request.Username;
+        user.Email = request.Email;
+        user.PhoneNumber = request.PhoneNumber;
+        return user;
     }
     public static UserResponse MapToUserResponse(this User user)
     {
@@ -25,8 +31,9 @@ public static class UserContractMapper
             Username = user.Username,
             Email = user.Email,
             PhoneNumber = user.PhoneNumber,
-            Password = user.Password,
             Plans = user.UserPlans.Select(up => new PlanResponse{ Id = up.PlanId, Title = up.Plan!.Title.ToString() }).ToList(),
         };
     }
+    public static IEnumerable<UserResponse> MapToUsersResponse(this IEnumerable<User> users) => users.Select(MapToUserResponse);
+
 }
