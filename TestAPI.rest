@@ -1,4 +1,15 @@
-################## Create ######################
+
+################## Create Free ######################
+POST http://localhost:5262/api/plan HTTP/1.1
+content-type: application/json
+
+{
+    "title": "free",
+    "description": "free plan",
+    "maxTasks":5
+}
+
+################## Create Premium ######################
 POST http://localhost:5262/api/plan HTTP/1.1
 content-type: application/json
 
@@ -6,12 +17,24 @@ content-type: application/json
     "title": "premium",
     "description": "premium plan",
     "price":9,
-    "maxTasks":100
+    "maxTasks":100,
+    "durationDays":30
+}
+
+################## Create Business ######################
+POST http://localhost:5262/api/plan HTTP/1.1
+content-type: application/json
+
+{
+    "title": "business",
+    "description": "business plan",
+    "price":50,
+    "durationDays":365
 }
 
 ################## Get By Id ######################
 
-GET  http://localhost:5262/api/plan/7cf8ac32-c43d-4925-5c1d-08dde32960c7 HTTP/1.1
+GET  http://localhost:5262/api/Plan/03b17659-ddd4-4824-8fed-08dde4aed35c HTTP/1.1
 content-type: application/json
 
 
