@@ -19,8 +19,8 @@ builder.Services.AddApplication();
 
 var app = builder.Build();
 
-// app.UseAuthentication();
-// app.UseAuthorization();
+app.UseAuthentication();
+app.UseAuthorization();
 
 
 // Configure the HTTP request pipeline.
