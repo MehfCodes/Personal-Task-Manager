@@ -30,7 +30,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
         return await dbSet.ToListAsync();
     }
 
-    public async Task DeleteAsync(Guid id)
+    public async Task<T?> DeleteAsync(Guid id)
     {
         var entity = await GetByIdAsync(id);
         if (entity != null)
@@ -38,6 +38,7 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
             dbSet.Remove(entity);
             await context.SaveChangesAsync();
         }
+        return entity;
     }
 
     public async Task UpdateAsync(T entity)
