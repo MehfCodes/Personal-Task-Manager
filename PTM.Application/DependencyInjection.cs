@@ -1,7 +1,9 @@
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using PTM.Application.Interfaces.Services;
 using PTM.Application.Mappers;
 using PTM.Application.Services;
+using PTM.Application.Validation;
 
 namespace PTM.Application;
 
@@ -12,6 +14,7 @@ public static class DependencyInjection
         services.AddScoped<IPlanService, PlanService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ITaskItemService, TaskItemService>();
+        services.AddValidatorsFromAssemblyContaining<ValidationAssemblyMarker>();
         return services;
     }
 }
