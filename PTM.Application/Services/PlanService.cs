@@ -1,7 +1,10 @@
 using System;
 using System.Data;
+using FluentValidation;
+using PTM.Application.Extentions;
 using PTM.Application.Interfaces.Repositories;
 using PTM.Application.Mappers;
+using PTM.Application.Validation.Validators.Plan;
 using PTM.Contracts.Requests;
 using PTM.Contracts.Response;
 using PTM.Domain.Models;
@@ -12,13 +15,20 @@ namespace PTM.Application.Services;
 public class PlanService : IPlanService
 {
     private readonly IPlanRepository repository;
+    private readonly IValidator<PlanRequest> createPlanValidator;
+    private readonly IValidator<PlanUpdateRequest> updatePlanValidator;
 
-    public PlanService(IPlanRepository repository)
+    public PlanService(IPlanRepository repository,
+     IValidator<PlanRequest> createPlanValidator,
+     IValidator<PlanUpdateRequest> updatePlanValidator)
     {
         this.repository = repository;
+        this.createPlanValidator = createPlanValidator;
+        this.updatePlanValidator = updatePlanValidator;
     }
     public async Task<PlanResponse> AddAsync(PlanRequest planRequest)
     {
+        await createPlanValidator.ValidateAndThrowAsync(planRequest);
         var newPlan = planRequest.MapToPlan();
         var record = await repository.AddAsync(newPlan);
         return record.MapToPlanResponse();
@@ -37,6 +47,7 @@ public class PlanService : IPlanService
     }
     public async Task<PlanResponse?> UpdateAsync(Guid id, PlanUpdateRequest newPlan)
     {
+        await updatePlanValidator.ValidateAndThrowAsync(newPlan);
         var record = await repository.GetByIdAsync(id);
         if (record is null) return null;
         newPlan.Id = record.Id;
