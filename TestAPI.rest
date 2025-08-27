@@ -6,7 +6,9 @@ content-type: application/json
 {
     "title": "free",
     "description": "free plan",
-    "maxTasks":5
+    "price":0,
+    "maxTasks":5,
+    "durationDays":7
 }
 
 ################## Create Premium ######################
@@ -45,15 +47,24 @@ content-type: application/json
 
 
 ################## Update ######################
-PUT  http://localhost:5262/api/plan/c0e855de-6851-406c-7861-08dde32e1dac HTTP/1.1
+PUT  http://localhost:5262/api/plan/b3146397-e456-4f8c-291e-08dde5bdeabd HTTP/1.1
 content-type: application/json
 
 {
-    "title": "premium",
-    "description": "premium plan",
-    "price":9,
-    "maxTasks":100,
-    "isActive":true
+    "title": "free",
+    "description": "free plan",
+    "price":0,
+    "maxTasks":7
+}
+################## Update with validation Error ######################
+PUT  http://localhost:5262/api/plan/b3146397-e456-4f8c-291e-08dde5bdeabd HTTP/1.1
+content-type: application/json
+
+{
+    "title": "free",
+    "description": "free plan",
+    "price":0,
+    "maxTasks":15
 }
 
 
