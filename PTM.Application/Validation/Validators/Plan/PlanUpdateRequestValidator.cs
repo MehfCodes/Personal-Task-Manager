@@ -8,6 +8,6 @@ public class PlanUpdateRequestValidator : AbstractValidator<PlanUpdateRequest>
 {
     public PlanUpdateRequestValidator()
     {
-        Include(new PlanUpdateRequestValidator());
+        Include(new PlanValidatorRules());
     }
 }
