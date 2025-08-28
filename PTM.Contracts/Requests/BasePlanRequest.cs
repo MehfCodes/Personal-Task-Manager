@@ -2,7 +2,7 @@ using System;
 
 namespace PTM.Contracts.Requests;
 
-public class BasePlanRequest
+public abstract class BasePlanRequest
 {
     public string Title { get; set; } = "Free";
     public string Description { get; set; } = string.Empty;
