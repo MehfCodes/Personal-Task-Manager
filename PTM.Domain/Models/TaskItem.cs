@@ -3,7 +3,7 @@ using System;
 namespace PTM.Domain.Models;
 
 public enum Priority {Low, Mid, High}
-public enum Status {ToDo, InProgress, Done}
+public enum Status {Todo, InProgress, Done}
 public class TaskItem
 {
     public Guid Id { get; set; }
