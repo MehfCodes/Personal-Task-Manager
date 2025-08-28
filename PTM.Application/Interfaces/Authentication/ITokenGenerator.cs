@@ -1,0 +1,12 @@
+using System;
+using PTM.Domain.Models;
+
+namespace PTM.Application.Interfaces.Authentication;
+
+public interface ITokenGenerator
+{
+    string CreateAccessToken(User user, IEnumerable<string> roles);
+    (string rawToken, string tokenHash, DateTime expiresAt) CreateRefreshToken();
+    string HashRefreshToken(string rawToken);
+}
+

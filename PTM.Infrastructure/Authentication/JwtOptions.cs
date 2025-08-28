@@ -9,4 +9,5 @@ public class JwtOptions
     public string Audience { get; init; } = string.Empty;
     public int AccessTokenDuration { get; init; }
     public int RefreshTokenDuration { get; init; }
+    public char[] SigningKey { get; internal set; }
 }
