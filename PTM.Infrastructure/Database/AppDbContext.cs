@@ -12,6 +12,7 @@ public class AppDbContext : DbContext
     public DbSet<Plan> Plans { get; set; }
     public DbSet<UserPlan> UserPlans { get; set; }
     public DbSet<TaskItem> Tasks { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
