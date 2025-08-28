@@ -17,10 +17,11 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<User>().Property(u => u.Role).HasConversion<string>();
         modelBuilder.Entity<Plan>().Property(p => p.Title).HasConversion<string>();
         modelBuilder.Entity<Plan>().Property(p => p.Price).HasPrecision(18, 2);
-        modelBuilder.Entity<TaskItem>().Property(p => p.Priority).HasConversion<string>();
-        modelBuilder.Entity<TaskItem>().Property(p => p.Status).HasConversion<string>();
+        modelBuilder.Entity<TaskItem>().Property(ti => ti.Priority).HasConversion<string>();
+        modelBuilder.Entity<TaskItem>().Property(ti => ti.Status).HasConversion<string>();
 
         modelBuilder.Entity<User>(e =>
         {
