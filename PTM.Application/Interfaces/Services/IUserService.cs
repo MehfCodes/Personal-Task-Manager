@@ -6,7 +6,7 @@ namespace PTM.Application.Interfaces.Services;
 
 public interface IUserService
 {
-    Task<UserResponse> AddAsync(UserRequest user);
+    Task<UserResponse> AddAsync(UserRegisterRequest user);
     Task<UserResponse?> GetByIdAsync(Guid id);
     Task<IEnumerable<UserResponse>> GetAllAsync();
     Task<UserResponse?> UpdateAsync(Guid id, UserUpdateRequest user);

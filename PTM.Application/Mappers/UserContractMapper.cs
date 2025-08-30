@@ -7,7 +7,7 @@ namespace PTM.Application.Mappers;
 
 public static class UserContractMapper
 {
-    public static User MapToUser(this UserRequest request)
+    public static User MapToUser(this UserRegisterRequest request)
     {
         return new User
         {

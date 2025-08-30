@@ -16,7 +16,7 @@ public class UserService : IUserService
     {
         this.repository = repository;
     }
-    public async Task<UserResponse> AddAsync(UserRequest user)
+    public async Task<UserResponse> AddAsync(UserRegisterRequest user)
     {
         var newUser = user.MapToUser();
         var record = await repository.AddAsync(newUser);
