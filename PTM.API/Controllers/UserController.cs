@@ -16,14 +16,8 @@ namespace PTM.API.Controllers
             this.userService = userService;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Add([FromBody] UserRegisterRequest request)
-        {
-            var res = await userService.AddAsync(request);
-            return CreatedAtAction(nameof(Get), new { id = res.Id }, res);
-        }
-
-        [HttpGet("{id:guid}")]
+        
+        [HttpGet("{id:guid}", Name ="Get")]
         public async Task<IActionResult> Get(Guid id)
         {
             var res = await userService.GetByIdAsync(id);
