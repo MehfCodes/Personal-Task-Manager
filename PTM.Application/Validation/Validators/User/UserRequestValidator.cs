@@ -4,7 +4,7 @@ using PTM.Contracts.Requests;
 
 namespace PTM.Application.Validation.Validators.User;
 
-public class UserRequestValidator : AbstractValidator<UserRequest>
+public class UserRequestValidator : AbstractValidator<UserRegisterRequest>
 {
     public UserRequestValidator()
     {
