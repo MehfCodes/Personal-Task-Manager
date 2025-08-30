@@ -18,14 +18,14 @@ public class TokenGenerator : ITokenGenerator
     {
         this.options = options.Value;
     }
-    public string CreateAccessToken(User user, IEnumerable<string> roles)
+    public string CreateAccessToken(User user)
     {
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new(JwtRegisteredClaimNames.Email, user.Email)
+            new(JwtRegisteredClaimNames.Email, user.Email),
+            new(ClaimTypes.Role, user.Role.ToString()),
         };
-        claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.SecretKey));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -52,4 +52,5 @@ public class TokenGenerator : ITokenGenerator
     {
         return BCrypt.Net.BCrypt.HashPassword(rawToken);
     }
+
 }
