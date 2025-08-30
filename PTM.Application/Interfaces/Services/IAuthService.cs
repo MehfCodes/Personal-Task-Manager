@@ -7,7 +7,7 @@ namespace PTM.Application.Interfaces.Services;
 public interface IAuthService
 {
     Task<UserResponse> Register(UserRegisterRequest request);
-    Task<UserResponse> Login(UserLoginRequest request); 
+    Task<UserResponse?> Login(UserLoginRequest request); 
     Task<RefreshTokenResponse> RefreshToken(RefreshTokenRequest request); 
     Task<ForgotPasswordResponse> ForgotPassword(ForgotPasswordRequest request); 
     Task<UpdatePasswordResponse> UpdatePassword(UpdatePasswordRequest request); 

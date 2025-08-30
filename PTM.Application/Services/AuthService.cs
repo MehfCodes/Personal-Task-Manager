@@ -31,10 +31,10 @@ public class AuthService : IAuthService
         return res;
     }
 
-    public async Task<UserResponse> Login(UserLoginRequest request)
+    public async Task<UserResponse?> Login(UserLoginRequest request)
     {
         var user = await repository.GetUserByEmail(request.Email!);
-        if (user is null || BCrypt.Net.BCrypt.Verify(request.Password, user.Password)) throw new UnauthorizedAccessException();
+        if (user is null || BCrypt.Net.BCrypt.Verify(request.Password, user.Password)) return null;
         var res = user.MapToUserResponse();
         res.AccessToken = tokenGenerator.CreateAccessToken(user);
         res.RefreshToken = tokenGenerator.CreateRefreshToken().tokenHash;
