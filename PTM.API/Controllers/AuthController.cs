@@ -1,0 +1,34 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using PTM.Application.Interfaces.Services;
+using PTM.Contracts.Requests;
+
+namespace PTM.API.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class AuthController : ControllerBase
+    {
+        private readonly IAuthService authService;
+
+        public AuthController(IAuthService authService)
+        {
+            this.authService = authService;
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] UserRegisterRequest request)
+        {
+            var res = await authService.Register(request);
+            return CreatedAtAction(nameof(UserController.Get), "User", new { id = res.Id }, res);
+        }
+
+        [HttpPost("/login")]
+        public async Task<IActionResult> Login([FromBody] UserLoginRequest request)
+        {
+            var res = await authService.Login(request);
+            if (res is null) return NotFound("user not found");
+            return Ok(res);
+        }
+    }
+}
