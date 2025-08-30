@@ -5,7 +5,7 @@ namespace PTM.Application.Interfaces.Authentication;
 
 public interface ITokenGenerator
 {
-    string CreateAccessToken(User user, IEnumerable<string> roles);
+    string CreateAccessToken(User user);
     (string rawToken, string tokenHash, DateTime expiresAt) CreateRefreshToken();
     string HashRefreshToken(string rawToken);
 }
