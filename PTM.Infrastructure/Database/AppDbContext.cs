@@ -48,5 +48,12 @@ public class AppDbContext : DbContext
             e.Property(up => up.PurchasedAt).IsRequired();
             e.Property(up => up.IsActive).HasDefaultValue(true);
         });
+
+        modelBuilder.Entity<RefreshToken>(e =>
+        {
+            e.HasOne(rt => rt.User)
+            .WithMany(u => u.RefreshTokens)
+            .HasForeignKey(rt => rt.UserId);
+        });
     }
 }
