@@ -1,14 +1,5 @@
 
-################## Create User ######################
-POST http://localhost:5262/api/user HTTP/1.1
-content-type: application/json
 
-{
-    "username":"boy",
-    "email": "boy@email.com",
-    "phoneNumber":"09129876543",
-    "password":"1234"
-}
 
 ################## Get All ######################
 GET  http://localhost:5262/api/user HTTP/1.1
