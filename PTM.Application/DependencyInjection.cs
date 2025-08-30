@@ -14,6 +14,7 @@ public static class DependencyInjection
         services.AddScoped<IPlanService, PlanService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ITaskItemService, TaskItemService>();
+        services.AddScoped<IAuthService, AuthService>();
         services.AddValidatorsFromAssemblyContaining<ValidationAssemblyMarker>();
         return services;
     }

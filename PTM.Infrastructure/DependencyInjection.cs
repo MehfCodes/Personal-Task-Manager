@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using PTM.Application.Interfaces;
+using PTM.Application.Interfaces.Authentication;
 using PTM.Application.Interfaces.Repositories;
 using PTM.Infrastructure.Authentication;
 using PTM.Infrastructure.Database;
@@ -22,6 +24,8 @@ public static class DependencyInjection
         // add scoped
         services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
         services.AddScoped<IPlanRepository, PlanRepository>();
+        services.AddScoped<ITokenGenerator, TokenGenerator>();
+        services.AddScoped<IUserRepository, UserRepository>();
 
         // add jwt options
         var JwtOptions = config.GetSection("Jwt");
