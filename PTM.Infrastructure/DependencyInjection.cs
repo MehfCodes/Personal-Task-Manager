@@ -26,6 +26,7 @@ public static class DependencyInjection
         services.AddScoped<IPlanRepository, PlanRepository>();
         services.AddScoped<ITokenGenerator, TokenGenerator>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
         // add jwt options
         var JwtOptions = config.GetSection("Jwt");
