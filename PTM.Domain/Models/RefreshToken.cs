@@ -1,4 +1,5 @@
 using System;
+using System.Linq.Expressions;
 
 namespace PTM.Domain.Models;
 
@@ -14,5 +15,4 @@ public class RefreshToken
     public Guid? ReplacedByTokenId { get; set; }
     public string? CreatedByIp { get; set; }
     public string? UserAgent { get; set; }
-    public bool IsActive => RevokedAt == null && DateTime.UtcNow < ExpiresAt;
 }
