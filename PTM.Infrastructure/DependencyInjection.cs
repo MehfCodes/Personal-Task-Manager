@@ -32,6 +32,9 @@ public static class DependencyInjection
         services.AddScoped<IRequestContext, RequestContext>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
+        var HashSecret = config.GetSection("HashSecret");
+        services.Configure<HashSecret>(HashSecret);
+
         // add jwt options
         var JwtOptions = config.GetSection("Jwt");
         services.Configure<JwtOptions>(JwtOptions);
