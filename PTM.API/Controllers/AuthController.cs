@@ -25,7 +25,7 @@ namespace PTM.API.Controllers
             return CreatedAtAction(nameof(UserController.Get), "User", new { id = res.Id }, res);
         }
 
-        [HttpPost("/login")]
+        [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UserLoginRequest request)
         {
             var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "";
