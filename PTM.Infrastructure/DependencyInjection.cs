@@ -7,6 +7,8 @@ using Microsoft.IdentityModel.Tokens;
 using PTM.Application.Interfaces;
 using PTM.Application.Interfaces.Authentication;
 using PTM.Application.Interfaces.Repositories;
+using PTM.Application.Interfaces.Services;
+using PTM.Application.Services;
 using PTM.Infrastructure.Authentication;
 using PTM.Infrastructure.Database;
 using PTM.Infrastructure.Repository;
@@ -26,6 +28,8 @@ public static class DependencyInjection
         services.AddScoped<IPlanRepository, PlanRepository>();
         services.AddScoped<ITokenGenerator, TokenGenerator>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddHttpContextAccessor();
+        services.AddScoped<IRequestContext, RequestContext>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
         // add jwt options
