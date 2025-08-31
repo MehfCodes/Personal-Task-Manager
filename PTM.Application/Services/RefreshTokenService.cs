@@ -38,15 +38,15 @@ public class RefreshTokenService : IRefreshTokenService
         var tokenHash = tokenGenerator.HashRefreshToken(token);
         return await repository.GetRefreshTokenByTokenHash(tokenHash);
     }
-    public async Task<RevokeResult?> RevokeRefreshTokenAsync(string token, User user, string ipAddress, string userAgent)
+    public async Task<RevokeResult?> RevokeRefreshTokenAsync(string token, string ipAddress, string userAgent)
     {
         var oldRefreshToken = await GetRefreshToken(token);
-        if (oldRefreshToken == null || oldRefreshToken.RevokedAt != null) return null;
-        var (rawToken, newRefreshToken) = await CreateRefreshTokenAsync(user, ipAddress, userAgent);
+        if (oldRefreshToken == null || oldRefreshToken.RevokedAt != null || oldRefreshToken.User == null) return null;
+        var (rawToken, newRefreshToken) = await CreateRefreshTokenAsync(oldRefreshToken.User, ipAddress, userAgent);
         oldRefreshToken.RevokedAt = DateTime.UtcNow;
         oldRefreshToken.ReplacedByTokenId = newRefreshToken.Id;
         await repository.UpdateAsync(oldRefreshToken);
-        var accessToken = tokenGenerator.CreateAccessToken(user);
+        var accessToken = tokenGenerator.CreateAccessToken(oldRefreshToken.User);
         return new RevokeResult { AccessToken = accessToken, RefreshToken = rawToken };
         
     }
