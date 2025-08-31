@@ -14,30 +14,36 @@ public class AuthService : IAuthService
 {
     private readonly IUserRepository repository;
     private readonly ITokenGenerator tokenGenerator;
+    private readonly IRefreshTokenService refreshTokenService;
 
-    public AuthService(IUserRepository repository, ITokenGenerator tokenGenerator)
+    public AuthService(IUserRepository repository,
+    ITokenGenerator tokenGenerator,
+    IRefreshTokenService refreshTokenService)
 {
         this.repository = repository;
         this.tokenGenerator = tokenGenerator;
+        this.refreshTokenService = refreshTokenService;
     }
 
-    public async Task<UserResponse> Register(UserRegisterRequest request)
+    public async Task<UserResponse> Register(UserRegisterRequest request, string ipAddress, string userAgent)
     {
         var newUser = request.MapToUser();
         var record = await repository.AddAsync(newUser);
         var res = record.MapToUserResponse();
         res.AccessToken = tokenGenerator.CreateAccessToken(newUser);
-        res.RefreshToken = tokenGenerator.CreateRefreshToken().tokenHash;
+        var (raw, _) = await refreshTokenService.CreateRefreshTokenAsync(newUser, ipAddress, userAgent);
+        res.RefreshToken = raw;
         return res;
     }
 
-    public async Task<UserResponse?> Login(UserLoginRequest request)
+    public async Task<UserResponse?> Login(UserLoginRequest request, string ipAddress, string userAgent)
     {
         var user = await repository.GetUserByEmail(request.Email!);
         if (user is null || BCrypt.Net.BCrypt.Verify(request.Password, user.Password)) return null;
         var res = user.MapToUserResponse();
         res.AccessToken = tokenGenerator.CreateAccessToken(user);
-        res.RefreshToken = tokenGenerator.CreateRefreshToken().tokenHash;
+        var (raw, _) = await refreshTokenService.CreateRefreshTokenAsync(user, ipAddress, userAgent);
+        res.RefreshToken = raw;
         return res;
     }
 
