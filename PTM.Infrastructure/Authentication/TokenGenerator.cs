@@ -13,10 +13,12 @@ namespace PTM.Infrastructure.Authentication;
 public class TokenGenerator : ITokenGenerator
 {
     private readonly JwtOptions options;
+    private readonly HashSecret secret;
 
-    public TokenGenerator(IOptions<JwtOptions> options)
+    public TokenGenerator(IOptions<JwtOptions> options, IOptions<HashSecret> secret)
     {
         this.options = options.Value;
+        this.secret = secret.Value;
     }
     public string CreateAccessToken(User user)
     {
@@ -42,7 +44,9 @@ public class TokenGenerator : ITokenGenerator
 
     public (string rawToken, string tokenHash, DateTime expiresAt) CreateRefreshToken()
     {
-        var rawToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        var tokenId = Guid.NewGuid().ToString("N");
+        var randomPart = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+        var rawToken = $"{tokenId}.{randomPart}";
         var hash = HashRefreshToken(rawToken);
         var expires = DateTime.UtcNow.AddDays(options.RefreshTokenDuration);
         return (rawToken, hash, expires);
@@ -50,7 +54,9 @@ public class TokenGenerator : ITokenGenerator
 
     public string HashRefreshToken(string rawToken)
     {
-        return BCrypt.Net.BCrypt.HashPassword(rawToken);
+        var bytes = Encoding.UTF8.GetBytes(rawToken + secret.Key);
+        var hash = SHA256.HashData(bytes);
+        return Convert.ToBase64String(hash);
     }
 
 }
