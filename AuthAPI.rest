@@ -8,3 +8,21 @@ content-type: application/json
     "phoneNumber":"09129876543",
     "password":"1234@Boy"
 }
+
+
+################## Login User ######################
+POST http://localhost:5262/api/auth/login HTTP/1.1
+content-type: application/json
+
+{
+    "email": "boy@email.com",
+    "password":"1234@Boy"
+}
+
+################## Refresh token ######################
+POST http://localhost:5262/api/auth/refresh HTTP/1.1
+content-type: application/json
+
+{
+    "refreshToken":"f04f656430b94a36a4c5390efa252877.TpcrozPKuC8geQhMYbsmQ7neU7jCbh2tK+dHiXyf2oM="
+}
