@@ -19,14 +19,18 @@ namespace PTM.API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserRegisterRequest request)
         {
-            var res = await authService.Register(request);
+            var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "";
+            var userAgent = Request.Headers.UserAgent.ToString() ?? "";
+            var res = await authService.Register(request, ipAddress, userAgent);
             return CreatedAtAction(nameof(UserController.Get), "User", new { id = res.Id }, res);
         }
 
         [HttpPost("/login")]
         public async Task<IActionResult> Login([FromBody] UserLoginRequest request)
         {
-            var res = await authService.Login(request);
+            var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "";
+            var userAgent = Request.Headers.UserAgent.ToString() ?? "";
+            var res = await authService.Login(request, ipAddress, userAgent);
             if (res is null) return NotFound("user not found");
             return Ok(res);
         }
