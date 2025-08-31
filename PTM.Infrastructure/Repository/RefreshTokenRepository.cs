@@ -17,6 +17,7 @@ public class RefreshTokenRepository : BaseRepository<RefreshToken>, IRefreshToke
 
     public async Task<RefreshToken?> GetRefreshTokenByTokenHash(string tokenHash)
     {
-        return await context.RefreshTokens.FirstOrDefaultAsync(rt => rt.TokenHash == tokenHash && rt.IsActive == true);
+        return await context.RefreshTokens.Include(rt => rt.User)
+            .FirstOrDefaultAsync(rt => rt.TokenHash == tokenHash && rt.RevokedAt == null && rt.ExpiresAt > DateTime.UtcNow);
     }
 }
