@@ -30,5 +30,12 @@ namespace PTM.API.Controllers
             if (res is null) return NotFound("user not found");
             return Ok(res);
         }
+        [HttpPost("refresh")]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
+        {
+            var res = await authService.RefreshToken(request.RefreshToken);
+            if (res is null) return NotFound("not found");
+            return Ok(res);
+        }
     }
 }
