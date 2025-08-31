@@ -13,7 +13,12 @@ public class RequestContext : IRequestContext
     {
         this.httpContextAccessor = httpContextAccessor;
     }
-    public string? GetUserId() => httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    public Guid? GetUserId()
+    {
+        var userId = httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        return userId != null ? Guid.Parse(userId) : null;
+    }
+
     public string? GetUserAgent() => httpContextAccessor.HttpContext?.Request.Headers.UserAgent.ToString();
     public string? GetIpAddress() => httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString();
             

@@ -4,7 +4,7 @@ namespace PTM.Application.Interfaces.Services;
 
 public interface IRequestContext
 {
-    string? GetUserId();
+    Guid? GetUserId();
     string? GetUserAgent();
     string? GetIpAddress();
 }

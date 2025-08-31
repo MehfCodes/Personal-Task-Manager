@@ -15,9 +15,9 @@ public class AuthService : IAuthService
     private readonly IUserRepository repository;
     private readonly ITokenGenerator tokenGenerator;
     private readonly IRefreshTokenService refreshTokenService;
-    private readonly IRequestContext requestContext;
     private readonly string ipAddress;
     private readonly string userAgent;
+    private readonly Guid? userIdFromReq;
 
 
     public AuthService(IUserRepository repository,
@@ -30,6 +30,7 @@ public class AuthService : IAuthService
         this.refreshTokenService = refreshTokenService;
         ipAddress = requestContext.GetIpAddress() ?? "";
         userAgent = requestContext.GetUserAgent() ?? "";
+        userIdFromReq = requestContext.GetUserId();
 
     }
 
@@ -55,13 +56,9 @@ public class AuthService : IAuthService
         return res;
     }
 
-    public async Task<RefreshTokenResponse?> RefreshToken(RefreshTokenRequest request)
+    public async Task<RefreshTokenResponse?> RefreshToken(string refreshToken)
     {
-        var rt = await refreshTokenService.GetRefreshToken(request.RefreshToken!);
-        if (rt is null) return null;
-        var user = await repository.GetByIdAsync(rt.UserId);
-        if (user is null) return null;
-        var revoked= await refreshTokenService.RevokeRefreshTokenAsync(request.RefreshToken!, user, ipAddress, userAgent);
+        var revoked= await refreshTokenService.RevokeRefreshTokenAsync(refreshToken, ipAddress, userAgent);
         if (revoked is null) return null;
         return new RefreshTokenResponse { AccessToken = revoked.AccessToken, RefreshToken = revoked.RefreshToken };
     }
