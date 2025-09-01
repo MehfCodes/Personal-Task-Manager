@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using PTM.API.Middlewares;
 using PTM.Application;
 using PTM.Infrastructure;
 
@@ -24,7 +25,7 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 
 var app = builder.Build();
-
+app.UseMiddleware<ProtectedRoute>();
 app.UseAuthentication();
 app.UseAuthorization();
 
