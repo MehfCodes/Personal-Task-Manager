@@ -12,17 +12,23 @@ public class ProtectedRoute
 {
     private readonly string jwtSecretKey;
     private readonly RequestDelegate next;
-    private readonly IUserRepository userRepository;
+    private readonly JwtOptions JwtOpt;
 
-    public ProtectedRoute(RequestDelegate next, IOptions<JwtOptions> options, IUserRepository userRepository)
+    public ProtectedRoute(RequestDelegate next, IOptions<JwtOptions> options)
     {
         this.next = next;
         jwtSecretKey = options.Value.SecretKey;
-        this.userRepository = userRepository;
+        JwtOpt = options.Value;
     }
 
-    public async Task InvokeAsync(HttpContext httpContext)
+    public async Task InvokeAsync(HttpContext httpContext, IUserRepository userRepository)
     {
+        var path = httpContext.Request.Path;
+        if (path.HasValue && (path.Value.Contains("login") || path.Value.Contains("register")))
+        {
+            await next(httpContext);
+            return;
+        }
         var token = httpContext.Request.Headers.Authorization.FirstOrDefault()?.Split(" ").Last();
         if (string.IsNullOrEmpty(token))
         {
@@ -40,6 +46,8 @@ public class ProtectedRoute
                 IssuerSigningKey = new SymmetricSecurityKey(key),
                 ValidateIssuer = true,
                 ValidateAudience = true,
+                ValidIssuer = JwtOpt.Issuer,
+                ValidAudience = JwtOpt.Audience,
                 ClockSkew = TimeSpan.Zero
             }, out SecurityToken validatedToken);
 
@@ -67,10 +75,11 @@ public class ProtectedRoute
             }
             await next(httpContext);
         }
-        catch (Exception)
+        catch (Exception e)
         {
+            
             httpContext.Response.StatusCode = 401;
-            await httpContext.Response.WriteAsync("Invalid token");
+            await httpContext.Response.WriteAsync(e.Message);
         }
 
     }
