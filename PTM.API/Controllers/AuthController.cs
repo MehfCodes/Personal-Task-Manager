@@ -40,5 +40,11 @@ namespace PTM.API.Controllers
             if (res is null) return NotFound("not found");
             return Ok(res);
         }
+        [HttpPatch("update-password")]
+        public IActionResult UpdatePassword([FromBody] UpdatePasswordRequest request)
+        {
+            var res = authService.UpdatePassword(request);
+            return Ok(res);
+        }
     }
 }
