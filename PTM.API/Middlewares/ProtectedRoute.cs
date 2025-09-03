@@ -1,9 +1,12 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using PTM.Application.Interfaces;
+using PTM.Application.Interfaces.Repositories;
+using PTM.Application.Interfaces.Services;
 using PTM.Infrastructure.Authentication;
 
 namespace PTM.API.Middlewares;
@@ -21,10 +24,13 @@ public class ProtectedRoute
         JwtOpt = options.Value;
     }
 
-    public async Task InvokeAsync(HttpContext httpContext, IUserRepository userRepository)
+    public async Task InvokeAsync(HttpContext httpContext, IUserRepository userRepository, IRefreshTokenRepository refreshTokenRepository, IRequestContext requestContext)
     {
-        var path = httpContext.Request.Path;
-        if (path.HasValue && (path.Value.Contains("login") || path.Value.Contains("register")))
+        var ipAddress = requestContext.GetIpAddress() ?? "";
+        var userAgent = requestContext.GetUserAgent() ?? "";
+
+        var endpoint = httpContext.GetEndpoint();
+        if (endpoint?.Metadata?.GetMetadata<IAllowAnonymous>() is object)
         {
             await next(httpContext);
             return;
@@ -53,6 +59,8 @@ public class ProtectedRoute
 
             var jwtToken = (JwtSecurityToken)validatedToken;
             var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
+            var jti = jwtToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti)?.Value;
+
             if (string.IsNullOrEmpty(userIdClaim))
             {
                 httpContext.Response.StatusCode = 401;
@@ -73,11 +81,18 @@ public class ProtectedRoute
                 await httpContext.Response.WriteAsync("Password changed. Please login again.");
                 return;
             }
+
+            var rt = await refreshTokenRepository.GetRefreshTokenByUserId(Guid.Parse(userIdClaim), ipAddress, userAgent);
+            if (rt is not null && rt.Jti.ToString() != jti)
+            {
+                httpContext.Response.StatusCode = 401;
+                await httpContext.Response.WriteAsync("Token revoked or invalid.");
+                return;
+            }
             await next(httpContext);
         }
         catch (Exception e)
         {
-            
             httpContext.Response.StatusCode = 401;
             await httpContext.Response.WriteAsync(e.Message);
         }
