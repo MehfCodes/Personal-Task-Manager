@@ -1,5 +1,5 @@
 ################## Register User ######################
-POST http://localhost:5262/api/auth/register HTTP/1.1
+POST https://localhost:7282/api/auth/register HTTP/1.1
 content-type: application/json
 
 {
@@ -11,18 +11,18 @@ content-type: application/json
 
 
 ################## Login User ######################
-POST http://localhost:5262/api/auth/login HTTP/1.1
+POST https://localhost:7282/api/auth/login HTTP/1.1
 content-type: application/json
 
 {
-    "email": "boy@email.com",
+    "email": "mehf@email.com",
     "password":"1234@Boy"
 }
 
 ################## Refresh token ######################
-POST http://localhost:5262/api/auth/refresh HTTP/1.1
+POST https://localhost:7282/api/auth/refresh HTTP/1.1
 content-type: application/json
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2ZmRlYmNjNC1mYjI2LTRmY2ItNTJhZi0wOGRkZTlhOWU4MWYiLCJlbWFpbCI6Im1laGZAZW1haWwuY29tIiwianRpIjoiZmE0NWVmMmYtNjc1OS00MzJhLTgwY2QtNTcyN2E3NTlhNmJjIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiVXNlciIsImV4cCI6MTc1Njg1OTcyOCwiaXNzIjoiUFRNIiwiYXVkIjoiUFRNLkNsaWVudHMifQ.RaKj05h1xh0QPzwmpKPiOcgYnySPTHKDbKVyPSNTSbI
 {
     "refreshToken":"f04f656430b94a36a4c5390efa252877.TpcrozPKuC8geQhMYbsmQ7neU7jCbh2tK+dHiXyf2oM="
 }

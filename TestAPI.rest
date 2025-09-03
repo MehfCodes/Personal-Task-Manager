@@ -36,14 +36,16 @@ content-type: application/json
 
 ################## Get By Id ######################
 
-GET  http://localhost:5262/api/Plan/03b17659-ddd4-4824-8fed-08dde4aed35c HTTP/1.1
+GET  https://localhost:7282/api/Plan/03b17659-ddd4-4824-8fed-08dde4aed35c HTTP/1.1
 content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2ZmRlYmNjNC1mYjI2LTRmY2ItNTJhZi0wOGRkZTlhOWU4MWYiLCJlbWFpbCI6Im1laGZAZW1haWwuY29tIiwianRpIjoiZmE0NWVmMmYtNjc1OS00MzJhLTgwY2QtNTcyN2E3NTlhNmJjIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiVXNlciIsImV4cCI6MTc1Njg1OTcyOCwiaXNzIjoiUFRNIiwiYXVkIjoiUFRNLkNsaWVudHMifQ.RaKj05h1xh0QPzwmpKPiOcgYnySPTHKDbKVyPSNTSbI
 
 
 ################## Get All #######################
 
-GET  http://localhost:5262/api/plan HTTP/1.1
+GET  https://localhost:7282/api/plan HTTP/1.1
 content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2ZmRlYmNjNC1mYjI2LTRmY2ItNTJhZi0wOGRkZTlhOWU4MWYiLCJlbWFpbCI6Im1laGZAZW1haWwuY29tIiwianRpIjoiZmE0NWVmMmYtNjc1OS00MzJhLTgwY2QtNTcyN2E3NTlhNmJjIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiVXNlciIsImV4cCI6MTc1Njg1OTcyOCwiaXNzIjoiUFRNIiwiYXVkIjoiUFRNLkNsaWVudHMifQ.RaKj05h1xh0QPzwmpKPiOcgYnySPTHKDbKVyPSNTSbI
 
 
 ################## Update ######################
