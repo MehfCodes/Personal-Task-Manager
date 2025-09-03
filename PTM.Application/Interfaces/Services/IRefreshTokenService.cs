@@ -5,9 +5,10 @@ namespace PTM.Application.Interfaces.Services;
 
 public interface IRefreshTokenService
 {
-    Task<(string, RefreshToken)> CreateRefreshTokenAsync(User user, string ipAddress, string userAgent);
+    Task<(string, RefreshToken)> CreateRefreshTokenAsync(User user);
     Task<RefreshToken?> GetRefreshToken(string token);
-    Task<RevokeResult?> RevokeRefreshTokenAsync(string token, string ipAddress, string userAgent);
+    Task<RevokeResult?> GenerateAndRevokeRefreshTokenAsync(string token);
+    Task RevokePreviousToken(Guid userId);
 }
 
 public class RevokeResult
