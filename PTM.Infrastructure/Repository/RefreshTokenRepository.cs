@@ -20,4 +20,10 @@ public class RefreshTokenRepository : BaseRepository<RefreshToken>, IRefreshToke
         return await context.RefreshTokens.Include(rt => rt.User)
             .FirstOrDefaultAsync(rt => rt.TokenHash == tokenHash && rt.RevokedAt == null && rt.ExpiresAt > DateTime.UtcNow);
     }
+
+    public async Task<RefreshToken?> GetRefreshTokenByUserId(Guid userId, string ipAddress, string userAgent)
+    {
+        return await context.RefreshTokens.Include(rt => rt.User)
+            .FirstOrDefaultAsync(rt => rt.UserId == userId && rt.RevokedAt == null && rt.CreatedByIp == ipAddress && rt.UserAgent == userAgent && rt.ExpiresAt > DateTime.UtcNow);
+    }
 }
