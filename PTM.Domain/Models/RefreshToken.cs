@@ -13,6 +13,7 @@ public class RefreshToken
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? RevokedAt { get; set; }
     public Guid? ReplacedByTokenId { get; set; }
+    public Guid Jti { get; set; }
     public string? CreatedByIp { get; set; }
     public string? UserAgent { get; set; }
 }
