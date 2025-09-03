@@ -15,22 +15,14 @@ public class AuthService : IAuthService
     private readonly IUserRepository repository;
     private readonly ITokenGenerator tokenGenerator;
     private readonly IRefreshTokenService refreshTokenService;
-    private readonly string ipAddress;
-    private readonly string userAgent;
-    private readonly Guid? userIdFromReq;
-
 
     public AuthService(IUserRepository repository,
     ITokenGenerator tokenGenerator,
-    IRefreshTokenService refreshTokenService,
-    IRequestContext requestContext)
+    IRefreshTokenService refreshTokenService)
     {
         this.repository = repository;
         this.tokenGenerator = tokenGenerator;
         this.refreshTokenService = refreshTokenService;
-        ipAddress = requestContext.GetIpAddress() ?? "";
-        userAgent = requestContext.GetUserAgent() ?? "";
-        userIdFromReq = requestContext.GetUserId();
 
     }
 
@@ -39,8 +31,8 @@ public class AuthService : IAuthService
         var newUser = request.MapToUser();
         var record = await repository.AddAsync(newUser);
         var res = record.MapToUserResponse();
-        res.AccessToken = tokenGenerator.CreateAccessToken(newUser);
-        var (raw, _) = await refreshTokenService.CreateRefreshTokenAsync(newUser, ipAddress, userAgent);
+        var (raw, rt) = await refreshTokenService.CreateRefreshTokenAsync(newUser);
+        res.AccessToken = tokenGenerator.CreateAccessToken(newUser, rt.Jti);
         res.RefreshToken = raw;
         return res;
     }
@@ -50,15 +42,16 @@ public class AuthService : IAuthService
         var user = await repository.GetUserByEmail(request.Email!);
         if (user is null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password)) return null;
         var res = user.MapToUserResponse();
-        res.AccessToken = tokenGenerator.CreateAccessToken(user);
-        var (raw, _) = await refreshTokenService.CreateRefreshTokenAsync(user, ipAddress, userAgent);
+        await refreshTokenService.RevokePreviousToken(user.Id);
+        var (raw, rt) = await refreshTokenService.CreateRefreshTokenAsync(user);
+        res.AccessToken = tokenGenerator.CreateAccessToken(user, rt.Jti);
         res.RefreshToken = raw;
         return res;
     }
 
     public async Task<RefreshTokenResponse?> RefreshToken(string refreshToken)
     {
-        var revoked= await refreshTokenService.RevokeRefreshTokenAsync(refreshToken, ipAddress, userAgent);
+        var revoked= await refreshTokenService.GenerateAndRevokeRefreshTokenAsync(refreshToken);
         if (revoked is null) return null;
         return new RefreshTokenResponse { AccessToken = revoked.AccessToken, RefreshToken = revoked.RefreshToken };
     }
@@ -66,6 +59,11 @@ public class AuthService : IAuthService
     public Task<UpdatePasswordResponse> UpdatePassword(UpdatePasswordRequest request)
     {
         throw new NotImplementedException();
+        // request current password - newPassword
+        // verify password
+        // update password
+        // msg: password updated
+        // send new token
     }
     public Task<ForgotPasswordResponse> ForgotPassword(ForgotPasswordRequest request)
     {
