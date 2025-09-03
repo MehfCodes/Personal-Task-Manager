@@ -20,12 +20,13 @@ public class TokenGenerator : ITokenGenerator
         this.options = options.Value;
         this.secret = secret.Value;
     }
-    public string CreateAccessToken(User user)
+    public string CreateAccessToken(User user,Guid jti)
     {
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Email, user.Email),
+            new(JwtRegisteredClaimNames.Jti, jti.ToString()),
             new(ClaimTypes.Role, user.Role.ToString()),
         };
 
