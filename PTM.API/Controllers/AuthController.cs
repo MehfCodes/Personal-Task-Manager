@@ -34,6 +34,7 @@ namespace PTM.API.Controllers
             return Ok(res);
         }
         [HttpPost("refresh")]
+        [AllowAnonymous]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
         {
             var res = await authService.RefreshToken(request.RefreshToken);
