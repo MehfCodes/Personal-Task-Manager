@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -42,9 +43,10 @@ namespace PTM.API.Controllers
             return Ok(res);
         }
         [HttpPatch("update-password")]
-        public IActionResult UpdatePassword([FromBody] UpdatePasswordRequest request)
+        public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordRequest request)
         {
-            var res = authService.UpdatePassword(request);
+            var res = await authService.UpdatePassword(request);
+            if (res is null) return NotFound("not found");
             return Ok(res);
         }
     }
