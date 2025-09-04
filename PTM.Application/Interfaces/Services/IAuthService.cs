@@ -10,5 +10,5 @@ public interface IAuthService
     Task<UserResponse?> Login(UserLoginRequest request); 
     Task<RefreshTokenResponse?> RefreshToken(string refreshToken); 
     Task<ForgotPasswordResponse> ForgotPassword(ForgotPasswordRequest request); 
-    Task<UpdatePasswordResponse> UpdatePassword(UpdatePasswordRequest request); 
+    Task<UpdatePasswordResponse?> UpdatePassword(UpdatePasswordRequest request); 
 }
