@@ -1,4 +1,5 @@
 using System;
+using BCrypt.Net;
 using PTM.Application.Interfaces;
 using PTM.Application.Interfaces.Authentication;
 using PTM.Application.Interfaces.Services;
@@ -15,15 +16,16 @@ public class AuthService : IAuthService
     private readonly IUserRepository repository;
     private readonly ITokenGenerator tokenGenerator;
     private readonly IRefreshTokenService refreshTokenService;
-
+    private Guid? userIdReq;
     public AuthService(IUserRepository repository,
     ITokenGenerator tokenGenerator,
-    IRefreshTokenService refreshTokenService)
+    IRefreshTokenService refreshTokenService,
+    IRequestContext requestContext)
     {
         this.repository = repository;
         this.tokenGenerator = tokenGenerator;
         this.refreshTokenService = refreshTokenService;
-
+        userIdReq = requestContext.GetUserId();
     }
 
     public async Task<UserResponse> Register(UserRegisterRequest request)
@@ -51,19 +53,22 @@ public class AuthService : IAuthService
 
     public async Task<RefreshTokenResponse?> RefreshToken(string refreshToken)
     {
-        var revoked= await refreshTokenService.GenerateAndRevokeRefreshTokenAsync(refreshToken);
+        var revoked = await refreshTokenService.GenerateAndRevokeRefreshTokenAsync(refreshToken);
         if (revoked is null) return null;
         return new RefreshTokenResponse { AccessToken = revoked.AccessToken, RefreshToken = revoked.RefreshToken };
     }
 
-    public Task<UpdatePasswordResponse> UpdatePassword(UpdatePasswordRequest request)
+    public async Task<UpdatePasswordResponse?> UpdatePassword(UpdatePasswordRequest request)
     {
-        throw new NotImplementedException();
-        // request current password - newPassword
-        // verify password
-        // update password
-        // msg: password updated
-        // send new token
+        if (!userIdReq.HasValue) return null; //please login
+        var user = await repository.GetByIdAsync(userIdReq.Value);
+        if (user is null) return null; // user not found
+        if (!BCrypt.Net.BCrypt.Verify(request.CurrentPassword, user.Password)) return null; // current password is wrong
+        user.Password = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+        user.PasswordChangedAt = DateTime.UtcNow;
+        await repository.UpdateAsync(user);
+        await refreshTokenService.RevokePreviousToken(user.Id, true);
+        return new UpdatePasswordResponse { Massage = "password updated! please login." };
     }
     public Task<ForgotPasswordResponse> ForgotPassword(ForgotPasswordRequest request)
     {
