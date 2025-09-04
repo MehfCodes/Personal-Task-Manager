@@ -8,7 +8,7 @@ public interface IRefreshTokenService
     Task<(string, RefreshToken)> CreateRefreshTokenAsync(User user);
     Task<RefreshToken?> GetRefreshToken(string token);
     Task<RevokeResult?> GenerateAndRevokeRefreshTokenAsync(string token);
-    Task RevokePreviousToken(Guid userId);
+    Task RevokePreviousToken(Guid userId, bool allDevice = false);
 }
 
 public class RevokeResult

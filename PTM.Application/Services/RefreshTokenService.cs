@@ -67,9 +67,9 @@ public class RefreshTokenService : IRefreshTokenService
         await repository.UpdateAsync(refreshToken);
     }
     
-    public async Task RevokePreviousToken(Guid userId)
+    public async Task RevokePreviousToken(Guid userId, bool allDevice = false)
     {
-        var rt = await repository.GetRefreshTokenByUserId(userId, ipAddress, userAgent);
+        var rt = await repository.GetRefreshTokenByUserId(userId, ipAddress, userAgent, allDevice);
         if (rt is not null) await RevokeRefreshToken(rt);
     } 
 }
