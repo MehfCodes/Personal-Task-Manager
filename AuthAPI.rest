@@ -16,7 +16,7 @@ content-type: application/json
 
 {
     "email": "mehf@email.com",
-    "password":"1234@Boy"
+    "password":"12345@Boy"
 }
 
 ################## Refresh token ######################
@@ -26,3 +26,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2ZmRlYmNjN
 {
     "refreshToken":"f04f656430b94a36a4c5390efa252877.TpcrozPKuC8geQhMYbsmQ7neU7jCbh2tK+dHiXyf2oM="
 }
+
+################## Logout User ######################
+POST https://localhost:7282/api/auth/logout HTTP/1.1
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2ZmRlYmNjNC1mYjI2LTRmY2ItNTJhZi0wOGRkZTlhOWU4MWYiLCJlbWFpbCI6Im1laGZAZW1haWwuY29tIiwianRpIjoiNDJmYTRmZTMtODNmNS00ODFmLTlmM2EtZTVmZDUwZjdiNzgzIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiVXNlciIsImV4cCI6MTc1NzA0NTA0NCwiaXNzIjoiUFRNIiwiYXVkIjoiUFRNLkNsaWVudHMifQ.1gySGD3BvOvXMFHE2sb5qQYGn1CHqCrK1yKMv48iHxU
+
+
+

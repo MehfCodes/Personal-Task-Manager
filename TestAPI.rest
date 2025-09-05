@@ -45,8 +45,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2ZmRlYmNjN
 
 GET  https://localhost:7282/api/plan HTTP/1.1
 content-type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2ZmRlYmNjNC1mYjI2LTRmY2ItNTJhZi0wOGRkZTlhOWU4MWYiLCJlbWFpbCI6Im1laGZAZW1haWwuY29tIiwianRpIjoiZmE0NWVmMmYtNjc1OS00MzJhLTgwY2QtNTcyN2E3NTlhNmJjIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiVXNlciIsImV4cCI6MTc1Njg1OTcyOCwiaXNzIjoiUFRNIiwiYXVkIjoiUFRNLkNsaWVudHMifQ.RaKj05h1xh0QPzwmpKPiOcgYnySPTHKDbKVyPSNTSbI
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2ZmRlYmNjNC1mYjI2LTRmY2ItNTJhZi0wOGRkZTlhOWU4MWYiLCJlbWFpbCI6Im1laGZAZW1haWwuY29tIiwianRpIjoiZjgxNjQ3YmItOTczOS00NTAwLWEwYWMtMTE0NzBlMDk0OWRmIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiVXNlciIsImV4cCI6MTc1NzAzNTk3OCwiaXNzIjoiUFRNIiwiYXVkIjoiUFRNLkNsaWVudHMifQ.b3vXE0GY2HAfx6niJP7X3duAQF1RjrOnOwlbpHLiuH0
 
 ################## Update ######################
 PUT  http://localhost:5262/api/plan/b3146397-e456-4f8c-291e-08dde5bdeabd HTTP/1.1
