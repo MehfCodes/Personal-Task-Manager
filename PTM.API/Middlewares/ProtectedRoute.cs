@@ -75,21 +75,9 @@ public class ProtectedRoute
                 return;
             }
 
-            // if (user.PasswordChangedAt > jwtToken.IssuedAt)
-            // {
-            //     httpContext.Response.StatusCode = 401;
-            //     await httpContext.Response.WriteAsync("Password changed. Please login again.");
-            //     return;
-            // }
 
-            var rt = await refreshTokenRepository.GetRefreshTokenByUserId(Guid.Parse(userIdClaim), ipAddress, userAgent, false);
-            if (rt is null)
-            {
-                httpContext.Response.StatusCode = 401;
-                await httpContext.Response.WriteAsync("Access Denied.");
-                return;
-            }
-            if (rt is not null && rt.Jti.ToString() != jti)
+            var rt = await refreshTokenRepository.GetRefreshTokenByUserId(Guid.Parse(userIdClaim), ipAddress, userAgent);
+            if (rt is null || rt.Jti.ToString() != jti)
             {
                 httpContext.Response.StatusCode = 401;
                 await httpContext.Response.WriteAsync("Token revoked or invalid.");
