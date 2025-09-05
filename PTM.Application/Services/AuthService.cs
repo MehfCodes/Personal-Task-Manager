@@ -6,6 +6,7 @@ using PTM.Application.Interfaces.Services;
 using PTM.Application.Mappers;
 using PTM.Contracts.Requests;
 using PTM.Contracts.Response;
+using PTM.Contracts.Response.User;
 using PTM.Domain.Models;
 using PTM.Infrastructure.Repository;
 
@@ -73,5 +74,11 @@ public class AuthService : IAuthService
     public Task<ForgotPasswordResponse> ForgotPassword(ForgotPasswordRequest request)
     {
         throw new NotImplementedException();
+    }
+    public async Task<LogoutResponse?> Logout()
+    {
+        if (!userIdReq.HasValue) return null; //you are not login
+        await refreshTokenService.RevokePreviousToken(userIdReq.Value);
+        return new LogoutResponse { Massage = "you logout." };
     }
 }

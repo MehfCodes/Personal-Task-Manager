@@ -49,5 +49,12 @@ namespace PTM.API.Controllers
             if (res is null) return NotFound("not found");
             return Ok(res);
         }
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var res = await authService.Logout();
+            if (res is null) return NotFound("not found");
+            return Ok(res);
+        }
     }
 }
