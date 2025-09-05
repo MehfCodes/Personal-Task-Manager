@@ -21,17 +21,16 @@ public class RefreshTokenRepository : BaseRepository<RefreshToken>, IRefreshToke
             .FirstOrDefaultAsync(rt => rt.TokenHash == tokenHash && rt.RevokedAt == null && rt.ExpiresAt > DateTime.UtcNow);
     }
 
-    public async Task<RefreshToken?> GetRefreshTokenByUserId(Guid userId, string ipAddress, string userAgent, bool allDevice)
+    public async Task<RefreshToken?> GetRefreshTokenByUserId(Guid userId, string ipAddress, string userAgent)
     {
-        if (allDevice)
-        {
-            return await context.RefreshTokens.Include(rt => rt.User)
-            .FirstOrDefaultAsync(rt => rt.UserId == userId && rt.RevokedAt == null && rt.ExpiresAt > DateTime.UtcNow);
-        }
-        else
-        {
-            return await context.RefreshTokens.Include(rt => rt.User)
+        return await context.RefreshTokens.Include(rt => rt.User)
             .FirstOrDefaultAsync(rt => rt.UserId == userId && rt.RevokedAt == null && rt.CreatedByIp == ipAddress && rt.UserAgent == userAgent && rt.ExpiresAt > DateTime.UtcNow);
-        }
+    }
+
+    public async Task<List<RefreshToken>> GetRefreshTokensByUserId(Guid userId)
+    {
+        return await context.RefreshTokens.Include(rt => rt.User)
+            .Where(rt => rt.UserId == userId && rt.RevokedAt == null && rt.ExpiresAt > DateTime.UtcNow).ToListAsync();
+
     }
 }
