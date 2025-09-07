@@ -48,12 +48,12 @@ public class TokenGenerator : ITokenGenerator
         var tokenId = Guid.NewGuid().ToString("N");
         var randomPart = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
         var rawToken = $"{tokenId}.{randomPart}";
-        var hash = HashRefreshToken(rawToken);
+        var hash = HashToken(rawToken);
         var expires = DateTime.UtcNow.AddDays(options.RefreshTokenDuration);
         return (rawToken, hash, expires);
     }
 
-    public string HashRefreshToken(string rawToken)
+    public string HashToken(string rawToken)
     {
         var bytes = Encoding.UTF8.GetBytes(rawToken + secret.Key);
         var hash = SHA256.HashData(bytes);

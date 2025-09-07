@@ -41,7 +41,7 @@ public class RefreshTokenService : IRefreshTokenService
 
     public async Task<RefreshToken?> GetRefreshToken(string token)
     {
-        var tokenHash = tokenGenerator.HashRefreshToken(token);
+        var tokenHash = tokenGenerator.HashToken(token);
         return await repository.GetRefreshTokenByTokenHash(tokenHash);
     }
     public async Task<RevokeResult?> GenerateAndRevokeRefreshTokenAsync(string token)

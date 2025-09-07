@@ -7,6 +7,6 @@ public interface ITokenGenerator
 {
     string CreateAccessToken(User user, Guid jti);
     (string rawToken, string tokenHash, DateTime expiresAt) CreateRefreshToken();
-    string HashRefreshToken(string rawToken);
+    string HashToken(string rawToken);
 }
 
