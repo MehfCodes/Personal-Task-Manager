@@ -11,6 +11,7 @@ using PTM.Application.Interfaces.Services;
 using PTM.Application.Services;
 using PTM.Infrastructure.Authentication;
 using PTM.Infrastructure.Database;
+using PTM.Infrastructure.Providers;
 using PTM.Infrastructure.Repository;
 
 namespace PTM.Infrastructure;
@@ -34,6 +35,10 @@ public static class DependencyInjection
 
         var HashSecret = config.GetSection("HashSecret");
         services.Configure<HashSecret>(HashSecret);
+
+        // Email Config: Smtp
+        var smtpSettings = config.GetSection("SmtpSettings");
+        services.Configure<SmtpSettings>(smtpSettings);
 
         // add jwt options
         var JwtOptions = config.GetSection("Jwt");
