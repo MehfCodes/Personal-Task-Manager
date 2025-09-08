@@ -56,5 +56,13 @@ namespace PTM.API.Controllers
             if (res is null) return NotFound("not found");
             return Ok(res);
         }
+        [HttpPost("forgot-password")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+        {
+            var res = await authService.ForgotPassword(request);
+            if (res is null) return NotFound("not found");
+            return Ok(res);
+        }
     }
 }
