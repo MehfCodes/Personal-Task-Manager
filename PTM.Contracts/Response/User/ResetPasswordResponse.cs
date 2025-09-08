@@ -2,7 +2,7 @@ using System;
 
 namespace PTM.Contracts.Response.User;
 
-public class LogoutResponse : MessageResponse
+public class ResetPasswordResponse : MessageResponse
 {
    
 }

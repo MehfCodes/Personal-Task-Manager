@@ -1,8 +1,9 @@
 using System;
+using PTM.Contracts.Response;
 
 namespace PTM.Contracts.Requests;
 
-public class UpdatePasswordResponse
+public class UpdatePasswordResponse : MessageResponse
 {
-    public string Massage { get; set; } = string.Empty;
+   
 }
