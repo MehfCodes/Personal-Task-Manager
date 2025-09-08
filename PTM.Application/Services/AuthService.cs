@@ -2,6 +2,7 @@ using System;
 using BCrypt.Net;
 using PTM.Application.Interfaces;
 using PTM.Application.Interfaces.Authentication;
+using PTM.Application.Interfaces.Providers;
 using PTM.Application.Interfaces.Services;
 using PTM.Application.Mappers;
 using PTM.Contracts.Requests;
@@ -17,15 +18,24 @@ public class AuthService : IAuthService
     private readonly IUserRepository repository;
     private readonly ITokenGenerator tokenGenerator;
     private readonly IRefreshTokenService refreshTokenService;
+    private readonly IRequestContext requestContext;
+    private readonly IBaseRepository<ResetPassword> resetPasswordRepository;
+    private readonly ISmtpEmailSender smtpEmailSender;
     private Guid? userIdReq;
     public AuthService(IUserRepository repository,
     ITokenGenerator tokenGenerator,
     IRefreshTokenService refreshTokenService,
-    IRequestContext requestContext)
+    IRequestContext requestContext,
+    IBaseRepository<ResetPassword> resetPasswordRepository,
+    ISmtpEmailSender smtpEmailSender)
     {
         this.repository = repository;
         this.tokenGenerator = tokenGenerator;
         this.refreshTokenService = refreshTokenService;
+        this.requestContext = requestContext;
+        this.resetPasswordRepository = resetPasswordRepository;
+        this.smtpEmailSender = smtpEmailSender;
+        
         userIdReq = requestContext.GetUserId();
     }
 
@@ -71,14 +81,31 @@ public class AuthService : IAuthService
         await refreshTokenService.RevokePreviousToken(user.Id, true);
         return new UpdatePasswordResponse { Massage = "password updated! please login." };
     }
-    public Task<ForgotPasswordResponse> ForgotPassword(ForgotPasswordRequest request)
-    {
-        throw new NotImplementedException();
-    }
     public async Task<LogoutResponse?> Logout()
     {
         if (!userIdReq.HasValue) return null; //you are not login
         await refreshTokenService.RevokePreviousToken(userIdReq.Value);
         return new LogoutResponse { Massage = "you logout." };
+    }
+    public Task<ResetPasswordResponse?> ResetPassword(string token)
+    {
+        throw new NotImplementedException();
+    }
+    public async Task<ForgotPasswordResponse?> ForgotPassword(ForgotPasswordRequest request)
+    {
+        var user = await repository.GetUserByEmail(request.Email);
+        if (user == null) return null; //not found or your email does'nt exist.
+        var resetPasswordToken = Guid.NewGuid().ToString("N");
+        var resetTokenHash = tokenGenerator.HashToken(resetPasswordToken);
+        var resetPassword = new ResetPassword
+        {
+            UserId = user.Id,
+            Token = resetTokenHash,
+            Expires = DateTime.UtcNow.AddMinutes(5)
+        };
+        await resetPasswordRepository.AddAsync(resetPassword);
+        var emailBody = $"please click on the link below to reset your password \b {requestContext.BuildResetPasswordLink(user.Email, resetPasswordToken)}";
+        await smtpEmailSender.SendEmailAsync(user.Email, "Reset Password", emailBody);
+        return new ForgotPasswordResponse { Massage = "Check your email inbox, reset password link sent." };
     }
 }
