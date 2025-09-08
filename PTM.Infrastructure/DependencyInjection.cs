@@ -6,12 +6,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using PTM.Application.Interfaces;
 using PTM.Application.Interfaces.Authentication;
+using PTM.Application.Interfaces.Providers;
 using PTM.Application.Interfaces.Repositories;
 using PTM.Application.Interfaces.Services;
 using PTM.Application.Services;
 using PTM.Infrastructure.Authentication;
 using PTM.Infrastructure.Database;
 using PTM.Infrastructure.Providers;
+using PTM.Infrastructure.Providers.Email;
 using PTM.Infrastructure.Repository;
 
 namespace PTM.Infrastructure;
@@ -32,6 +34,7 @@ public static class DependencyInjection
         services.AddHttpContextAccessor();
         services.AddScoped<IRequestContext, RequestContext>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        services.AddScoped<ISmtpEmailSender, SmtpEmailSender>();
 
         var HashSecret = config.GetSection("HashSecret");
         services.Configure<HashSecret>(HashSecret);
