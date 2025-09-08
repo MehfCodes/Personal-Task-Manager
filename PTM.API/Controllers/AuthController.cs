@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PTM.Application.Interfaces.Services;
 using PTM.Contracts.Requests;
+using PTM.Contracts.Requests.User;
 
 namespace PTM.API.Controllers
 {
@@ -61,6 +62,14 @@ namespace PTM.API.Controllers
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
         {
             var res = await authService.ForgotPassword(request);
+            if (res is null) return NotFound("not found");
+            return Ok(res);
+        }
+        [HttpPost("reset-password")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        {
+            var res = await authService.ResetPassword(request);
             if (res is null) return NotFound("not found");
             return Ok(res);
         }

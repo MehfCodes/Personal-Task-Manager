@@ -3,9 +3,11 @@ using BCrypt.Net;
 using PTM.Application.Interfaces;
 using PTM.Application.Interfaces.Authentication;
 using PTM.Application.Interfaces.Providers;
+using PTM.Application.Interfaces.Repositories;
 using PTM.Application.Interfaces.Services;
 using PTM.Application.Mappers;
 using PTM.Contracts.Requests;
+using PTM.Contracts.Requests.User;
 using PTM.Contracts.Response;
 using PTM.Contracts.Response.User;
 using PTM.Domain.Models;
@@ -19,14 +21,14 @@ public class AuthService : IAuthService
     private readonly ITokenGenerator tokenGenerator;
     private readonly IRefreshTokenService refreshTokenService;
     private readonly IRequestContext requestContext;
-    private readonly IBaseRepository<ResetPassword> resetPasswordRepository;
+    private readonly IResetPasswordRepository resetPasswordRepository;
     private readonly ISmtpEmailSender smtpEmailSender;
     private Guid? userIdReq;
     public AuthService(IUserRepository repository,
     ITokenGenerator tokenGenerator,
     IRefreshTokenService refreshTokenService,
     IRequestContext requestContext,
-    IBaseRepository<ResetPassword> resetPasswordRepository,
+    IResetPasswordRepository resetPasswordRepository,
     ISmtpEmailSender smtpEmailSender)
     {
         this.repository = repository;
@@ -87,10 +89,6 @@ public class AuthService : IAuthService
         await refreshTokenService.RevokePreviousToken(userIdReq.Value);
         return new LogoutResponse { Massage = "you logout." };
     }
-    public Task<ResetPasswordResponse?> ResetPassword(string token)
-    {
-        throw new NotImplementedException();
-    }
     public async Task<ForgotPasswordResponse?> ForgotPassword(ForgotPasswordRequest request)
     {
         var user = await repository.GetUserByEmail(request.Email);
@@ -107,5 +105,21 @@ public class AuthService : IAuthService
         var emailBody = $"please click on the link below to reset your password \b {requestContext.BuildResetPasswordLink(user.Email, resetPasswordToken)}";
         await smtpEmailSender.SendEmailAsync(user.Email, "Reset Password", emailBody);
         return new ForgotPasswordResponse { Massage = "Check your email inbox, reset password link sent." };
+    }
+    public async Task<ResetPasswordResponse?> ResetPassword(ResetPasswordRequest request)
+    {
+        var hashedToken = tokenGenerator.HashToken(request.Token);
+        var user = await repository.GetUserByEmail(request.Email);
+        if (user is null) return null; //user not found
+        var resetPassword = await resetPasswordRepository.GetResetPasswordByToken(hashedToken, user.Id);
+        if (resetPassword is null) return null; // time expire;
+        user.Password = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+        user.PasswordChangedAt = DateTime.UtcNow;
+        await repository.UpdateAsync(user);
+        resetPassword.Expires = DateTime.UtcNow; // expire the token, prevent to double usage
+        await resetPasswordRepository.UpdateAsync(resetPassword);
+        await refreshTokenService.RevokePreviousToken(user.Id, true);
+        return new ResetPasswordResponse { Massage = "password updated! please login." };
+
     }
 }
