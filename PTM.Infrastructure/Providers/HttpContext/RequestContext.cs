@@ -21,5 +21,12 @@ public class RequestContext : IRequestContext
 
     public string? GetUserAgent() => httpContextAccessor.HttpContext?.Request.Headers.UserAgent.ToString();
     public string? GetIpAddress() => httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString();
-            
+    public string BuildResetPasswordLink(string email, string token)
+    {
+        var request = httpContextAccessor.HttpContext?.Request;
+        var scheme = request?.Scheme;
+        var host = request?.Host.Value;
+
+        return $"{scheme}://{host}/api/auth/reset-password?email={email}&token={token}";
+    }
 }
