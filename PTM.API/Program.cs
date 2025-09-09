@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using PTM.API;
 using PTM.API.Middlewares;
 using PTM.Application;
 using PTM.Infrastructure;
@@ -23,6 +24,7 @@ builder.Services.AddProblemDetails();
 // Custom DI
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
+builder.Services.AddExceptionHandlers();
 
 var app = builder.Build();
 
