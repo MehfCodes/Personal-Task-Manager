@@ -1,13 +1,13 @@
 using System;
+using FluentValidation.Results;
 
 namespace PTM.Application.Exceptions;
 
 public class ValidationException : Exception
 {
-    public IDictionary<string, string[]> Errors { get; }
+    public IEnumerable<ValidationFailure> Errors { get; set; }
 
-    public ValidationException(IDictionary<string, string[]> errors)
-        : base("Validation failed.")
+    public ValidationException(IEnumerable<ValidationFailure> errors) : base("Validation failed.")
     {
         Errors = errors;
     }
