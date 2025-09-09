@@ -20,7 +20,8 @@ namespace PTM.API.Controllers
         public async Task<IActionResult> Add([FromBody] PlanRequest request)
         {
             var result = await planService.AddAsync(request);
-            return CreatedAtAction(nameof(Get),new {id = result.Id}, result);
+            return CreatedAtAction(nameof(Get),new {id = result.Id},
+            ApiResponse<PlanResponse>.SuccessResponse(result, "Plan created successfully", HttpContext.TraceIdentifier));
         }
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> Get(Guid id)
