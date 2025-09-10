@@ -1,4 +1,5 @@
 using System;
+using PTM.Application.Exceptions;
 using PTM.Application.Interfaces.Exceptions;
 using PTM.Contracts.Response;
 
@@ -24,5 +25,20 @@ public abstract class ExceptionHandlerBase<TException> : IExceptionHandler where
     
     protected abstract int GetStatusCode(TException ex);
     protected abstract string GetMessage(TException ex);
-    protected virtual IDictionary<string, string[]>? GetErrors(TException ex) => null;
+    public IDictionary<string, string[]> GetErrors(TException ex)
+    {
+        if (ex is ValidationException validationEx)
+        {
+            return validationEx.Errors.GroupBy(e => e.PropertyName).ToDictionary(
+            k => k.Key,
+            v => v.Select(e => e.ErrorMessage).ToArray());
+        }
+        else
+        {
+            return new Dictionary<string, string[]>
+        {
+            { "Message", new string[] { ex.Message } }
+        };
+        }
+    }
 }

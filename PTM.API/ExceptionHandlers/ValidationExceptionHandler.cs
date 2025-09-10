@@ -9,14 +9,5 @@ public class ValidationExceptionHandler : ExceptionHandlerBase<ValidationExcepti
 
 
     protected override string GetMessage(ValidationException ex) => ex.Message;
-
-
-    protected override IDictionary<string, string[]>? GetErrors(ValidationException ex)
-    {
-        return ex.Errors.GroupBy(e => e.PropertyName).ToDictionary(
-            k => k.Key,
-            v => v.Select(e => e.ErrorMessage).ToArray()
-        );        
-    }
         
 }
