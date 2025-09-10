@@ -12,23 +12,18 @@ using PTM.Infrastructure.Repository;
 
 namespace PTM.Application.Services;
 
-public class PlanService : IPlanService
+public class PlanService : BaseService, IPlanService
 {
     private readonly IPlanRepository repository;
-    private readonly IValidator<PlanRequest> createPlanValidator;
-    private readonly IValidator<PlanUpdateRequest> updatePlanValidator;
 
     public PlanService(IPlanRepository repository,
-     IValidator<PlanRequest> createPlanValidator,
-     IValidator<PlanUpdateRequest> updatePlanValidator)
+     IServiceProvider serviceProvider) : base(serviceProvider)
     {
         this.repository = repository;
-        this.createPlanValidator = createPlanValidator;
-        this.updatePlanValidator = updatePlanValidator;
     }
     public async Task<PlanResponse> AddAsync(PlanRequest planRequest)
     {
-        await createPlanValidator.ValidateAndThrowAsync(planRequest);
+        await ValidateAsync(planRequest);
         var newPlan = planRequest.MapToPlan();
         var record = await repository.AddAsync(newPlan);
         return record.MapToPlanResponse();
@@ -47,7 +42,7 @@ public class PlanService : IPlanService
     }
     public async Task<PlanResponse?> UpdateAsync(Guid id, PlanUpdateRequest newPlan)
     {
-        await updatePlanValidator.ValidateAndThrowAsync(newPlan);
+        await ValidateAsync(newPlan);
         var record = await repository.GetByIdAsync(id);
         if (record is null) return null;
         newPlan.Id = record.Id;

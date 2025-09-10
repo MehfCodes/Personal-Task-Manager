@@ -4,7 +4,7 @@ namespace PTM.Contracts.Requests;
 
 public abstract class BasePlanRequest
 {
-    public string Title { get; set; } = "Free";
+    public string? Title { get; set; }
     public string Description { get; set; } = string.Empty;
     public decimal Price { get; set; }
     public int MaxTasks { get; set; } = -1;
