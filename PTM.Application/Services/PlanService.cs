@@ -1,15 +1,9 @@
-using System;
-using System.Data;
-using FluentValidation;
-using PTM.Application.Extentions;
+
+using PTM.Application.Exceptions;
 using PTM.Application.Interfaces.Repositories;
 using PTM.Application.Mappers;
-using PTM.Application.Validation.Validators.Plan;
 using PTM.Contracts.Requests;
 using PTM.Contracts.Response;
-using PTM.Domain.Models;
-using PTM.Infrastructure.Repository;
-
 namespace PTM.Application.Services;
 
 public class PlanService : BaseService, IPlanService
@@ -32,7 +26,7 @@ public class PlanService : BaseService, IPlanService
     public async Task<PlanResponse?> GetByIdAsync(Guid id)
     {
         var record = await repository.GetByIdAsync(id);
-        if (record is null) return null;
+        if (record is null) throw new NotFoundException("plan");
         return record.MapToPlanResponse();
     }
     public async Task<IEnumerable<PlanResponse>> GetAllAsync()
@@ -44,7 +38,7 @@ public class PlanService : BaseService, IPlanService
     {
         await ValidateAsync(newPlan);
         var record = await repository.GetByIdAsync(id);
-        if (record is null) return null;
+        if (record is null) throw new NotFoundException("plan");
         newPlan.Id = record.Id;
         var updatedPlan = newPlan.MapToPlan(record);
         await repository.UpdateAsync(updatedPlan);
@@ -54,7 +48,7 @@ public class PlanService : BaseService, IPlanService
     public async Task<bool> DeActiveAsync(Guid id)
     {
         var record = await repository.GetByIdAsync(id);
-        if (record is null) return false;
+        if (record is null) throw new NotFoundException("plan");
         await repository.DeActivePlan(record);
         return true;
     }
@@ -62,7 +56,7 @@ public class PlanService : BaseService, IPlanService
     public async Task<bool> ActivateAsync(Guid id)
     {
         var record = await repository.GetByIdAsync(id);
-        if (record is null) return false;
+        if (record is null) throw new NotFoundException("plan");
         await repository.ActivatePlan(record);
         return true;
     }
