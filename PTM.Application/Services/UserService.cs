@@ -9,11 +9,11 @@ using PTM.Infrastructure.Repository;
 
 namespace PTM.Application.Services;
 
-public class UserService : IUserService
+public class UserService : BaseService ,IUserService
 {
     private readonly IBaseRepository<User> repository;
 
-    public UserService(IBaseRepository<User> repository)
+    public UserService(IBaseRepository<User> repository, IServiceProvider serviceProvider) : base(serviceProvider)
     {
         this.repository = repository;
     }
@@ -28,6 +28,7 @@ public class UserService : IUserService
 
     public async Task<UserResponse> UpdateAsync(Guid id, UserUpdateRequest request)
     {
+        await ValidateAsync(request);
         var record = await repository.GetByIdAsync(id);
         if (record is null) throw new NotFoundException("User");
         request.Id = record.Id;
