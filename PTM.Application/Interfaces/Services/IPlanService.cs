@@ -8,9 +8,9 @@ namespace PTM.Application.Services;
 public interface IPlanService
 {
     Task<PlanResponse> AddAsync(PlanRequest plan);
-    Task<PlanResponse?> GetByIdAsync(Guid id);
+    Task<PlanResponse> GetByIdAsync(Guid id);
     Task<IEnumerable<PlanResponse>> GetAllAsync();
-    Task<PlanResponse?> UpdateAsync(Guid id, PlanUpdateRequest plan);
-    Task<bool> DeActiveAsync(Guid id);
-    Task<bool> ActivateAsync(Guid id);
+    Task<PlanResponse> UpdateAsync(Guid id, PlanUpdateRequest plan);
+    Task DeActiveAsync(Guid id);
+    Task ActivateAsync(Guid id);
 }

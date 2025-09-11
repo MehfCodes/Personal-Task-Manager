@@ -27,7 +27,6 @@ namespace PTM.API.Controllers
         public async Task<IActionResult> Get(Guid id)
         {
             var res = await planService.GetByIdAsync(id);
-            if (res is null) return NotFound("not found");
             return Ok(ApiResponse<PlanResponse>.SuccessResponse(res, "Plan found successfully", HttpContext.TraceIdentifier));
         }
         [HttpGet]
@@ -40,23 +39,20 @@ namespace PTM.API.Controllers
         public async Task<IActionResult> Update(Guid id, [FromBody] PlanUpdateRequest request)
         {
             var res = await planService.UpdateAsync(id, request);
-            if (res is null) return NotFound("not found");
             return Ok(ApiResponse<PlanResponse>.SuccessResponse(res, "Plan updated successfully", HttpContext.TraceIdentifier));
         }
 
         [HttpPatch("{id:guid}/deactive")]
         public async Task<IActionResult> DeActive(Guid id)
         {
-            var res = await planService.DeActiveAsync(id);
-            if (!res) return BadRequest("Deactivation failed!");
+            await planService.DeActiveAsync(id);
             var msg = new MessageResponse { Massage = "Deactived" };
             return Ok(ApiResponse<MessageResponse>.SuccessResponse(msg, "Plan deactived successfully", HttpContext.TraceIdentifier));
         }
         [HttpPatch("{id:guid}/active")]
         public async Task<IActionResult> Activate(Guid id)
         {
-            var res = await planService.ActivateAsync(id);
-            if (!res) return BadRequest("Activation Failed!");
+            await planService.ActivateAsync(id);
             var msg = new MessageResponse { Massage = "Actived" };
             return Ok(ApiResponse<MessageResponse>.SuccessResponse(msg, "Plan actived successfully", HttpContext.TraceIdentifier));
         }

@@ -23,7 +23,7 @@ public class PlanService : BaseService, IPlanService
         return record.MapToPlanResponse();
     }
 
-    public async Task<PlanResponse?> GetByIdAsync(Guid id)
+    public async Task<PlanResponse> GetByIdAsync(Guid id)
     {
         var record = await repository.GetByIdAsync(id);
         if (record is null) throw new NotFoundException("plan");
@@ -34,7 +34,7 @@ public class PlanService : BaseService, IPlanService
         var records = await repository.GetAllAsync();
         return records.MapToPlansResponse();
     }
-    public async Task<PlanResponse?> UpdateAsync(Guid id, PlanUpdateRequest newPlan)
+    public async Task<PlanResponse> UpdateAsync(Guid id, PlanUpdateRequest newPlan)
     {
         await ValidateAsync(newPlan);
         var record = await repository.GetByIdAsync(id);
@@ -45,19 +45,18 @@ public class PlanService : BaseService, IPlanService
         return updatedPlan.MapToPlanResponse();
     }
 
-    public async Task<bool> DeActiveAsync(Guid id)
+    public async Task DeActiveAsync(Guid id)
     {
         var record = await repository.GetByIdAsync(id);
         if (record is null) throw new NotFoundException("plan");
         await repository.DeActivePlan(record);
-        return true;
+
     }
 
-    public async Task<bool> ActivateAsync(Guid id)
+    public async Task ActivateAsync(Guid id)
     {
         var record = await repository.GetByIdAsync(id);
         if (record is null) throw new NotFoundException("plan");
         await repository.ActivatePlan(record);
-        return true;
     }
 }
