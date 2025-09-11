@@ -35,7 +35,6 @@ namespace PTM.API.Controllers
         public async Task<IActionResult> Login([FromBody] UserLoginRequest request)
         {
             var res = await authService.Login(request);
-            if (res is null) return NotFound("user not found");
             return Ok(ApiResponse<UserResponse>.SuccessResponse(res, "User login successfully", HttpContext.TraceIdentifier));
         }
         [HttpPost("refresh")]
@@ -43,21 +42,18 @@ namespace PTM.API.Controllers
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
         {
             var res = await authService.RefreshToken(request.RefreshToken);
-            if (res is null) return NotFound("not found");
             return Ok(ApiResponse<RefreshTokenResponse>.SuccessResponse(res, "Refresh token generated.", HttpContext.TraceIdentifier));
         }
         [HttpPatch("update-password")]
         public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordRequest request)
         {
             var res = await authService.UpdatePassword(request);
-            if (res is null) return NotFound("not found");
             return Ok(ApiResponse<UpdatePasswordResponse>.SuccessResponse(res, "Password update successfully", HttpContext.TraceIdentifier));
         }
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
             var res = await authService.Logout();
-            if (res is null) return NotFound("not found");
             return Ok(ApiResponse<LogoutResponse>.SuccessResponse(res, "User logout successfully", HttpContext.TraceIdentifier));
         }
         [HttpPost("forgot-password")]
@@ -65,7 +61,6 @@ namespace PTM.API.Controllers
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
         {
             var res = await authService.ForgotPassword(request);
-            if (res is null) return NotFound("not found");
             return Ok(ApiResponse<ForgotPasswordResponse>.SuccessResponse(res, "Check your email inbox", HttpContext.TraceIdentifier));
         }
         [HttpPost("reset-password")]
@@ -73,7 +68,6 @@ namespace PTM.API.Controllers
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
         {
             var res = await authService.ResetPassword(request);
-            if (res is null) return NotFound("not found");
             return Ok(ApiResponse<ResetPasswordResponse>.SuccessResponse(res, "Password reset successfully", HttpContext.TraceIdentifier));
         }
     }
