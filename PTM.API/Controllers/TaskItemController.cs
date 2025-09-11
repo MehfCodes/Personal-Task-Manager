@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PTM.Application.Mappers;
 using PTM.Contracts.Requests;
+using PTM.Contracts.Response;
 
 namespace PTM.API.Controllers
 {
@@ -19,33 +20,35 @@ namespace PTM.API.Controllers
         public async Task<IActionResult> Add([FromBody] TaskItemRequest request)
         {
             var res = await taskItemService.AddAsync(request);
-            return CreatedAtAction(nameof(Get), new { id = res.Id }, res);
+            return CreatedAtAction(nameof(Get), new { id = res.Id },
+            ApiResponse<TaskItemResponse>.SuccessResponse(res, "Task created successfully", HttpContext.TraceIdentifier));
         }
 
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> Get(Guid id)
         {
             var res = await taskItemService.GetByIdAsync(id);
-            if (res is null) return NotFound("user not found");
-            return Ok(res);
+            return Ok(ApiResponse<TaskItemResponse>.SuccessResponse(res, "Task found successfully", HttpContext.TraceIdentifier));
         }
         [HttpGet]
-        public async Task<IActionResult> GetAll() => Ok(await taskItemService.GetAllAsync());
+        public async Task<IActionResult> GetAll()
+        {
+            var res = await taskItemService.GetAllAsync();
+            return Ok(ApiResponse<IEnumerable<TaskItemResponse>>.SuccessResponse(res, "Tasks found successfully", HttpContext.TraceIdentifier));
+        }    
         
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] TaskItemUpdateRequest request)
         {
             var res = await taskItemService.UpdateAsync(id, request);
-            if (res is null) return NotFound("not found");
-            return Ok(res);
+            return Ok(ApiResponse<TaskItemResponse>.SuccessResponse(res, "Task updated successfully", HttpContext.TraceIdentifier));
         }
 
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var res = await taskItemService.DeleteAsync(id);
-            if (res is false) return NotFound("not found");
-            return Ok("Deleted Successfully");
+            await taskItemService.DeleteAsync(id);
+            return Ok(ApiResponse<MessageResponse>.SuccessResponse(new MessageResponse { Massage = "Deleted." }, "Task deleted successfully.", HttpContext.TraceIdentifier));
         }
        
     }

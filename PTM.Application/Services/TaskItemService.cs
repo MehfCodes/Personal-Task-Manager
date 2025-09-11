@@ -1,4 +1,5 @@
 using System;
+using PTM.Application.Exceptions;
 using PTM.Application.Mappers;
 using PTM.Contracts.Requests;
 using PTM.Contracts.Response;
@@ -28,28 +29,27 @@ public class TaskItemService : ITaskItemService
         return records.MapToTakItemsResponse();
     }
 
-    public async Task<TaskItemResponse?> GetByIdAsync(Guid id)
+    public async Task<TaskItemResponse> GetByIdAsync(Guid id)
     {
         var record = await repository.GetByIdAsync(id);
-        if (record is null) return null;
+        if (record is null) throw new NotFoundException("Task");
         return record.MapToTakItemResponse();
     }
 
-    public async Task<TaskItemResponse?> UpdateAsync(Guid id, TaskItemUpdateRequest request)
+    public async Task<TaskItemResponse> UpdateAsync(Guid id, TaskItemUpdateRequest request)
     {
         var record = await repository.GetByIdAsync(id);
-        if (record is null) return null;
+        if (record is null) throw new NotFoundException("Task");
         request.Id = record.Id;
         var updated = request.MapToTakItem(record);
         await repository.UpdateAsync(updated);
         return updated.MapToTakItemResponse();
     }
 
-    public async Task<bool> DeleteAsync(Guid id)
+    public async Task DeleteAsync(Guid id)
     {
         var record = await repository.DeleteAsync(id);
-        if (record is null) return false;
-        return true;
+        if (record is null) throw new NotFoundException("Task");
     }
 
 }
