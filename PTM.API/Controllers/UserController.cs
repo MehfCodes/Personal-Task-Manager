@@ -22,7 +22,6 @@ namespace PTM.API.Controllers
         public async Task<IActionResult> Get(Guid id)
         {
             var res = await userService.GetByIdAsync(id);
-            if (res is null) return NotFound("user not found");
             return Ok(ApiResponse<UserResponse>.SuccessResponse(res, "User found successfully", HttpContext.TraceIdentifier));
         }
         [HttpGet]
@@ -32,7 +31,6 @@ namespace PTM.API.Controllers
         public async Task<IActionResult> Update(Guid id, [FromBody] UserUpdateRequest request)
         {
             var res = await userService.UpdateAsync(id, request);
-            if (res is null) return NotFound("not found");
             return Ok(ApiResponse<UserResponse>.SuccessResponse(res, "User updated successfully", HttpContext.TraceIdentifier));
         }
        

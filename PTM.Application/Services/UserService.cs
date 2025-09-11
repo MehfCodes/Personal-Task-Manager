@@ -1,4 +1,5 @@
 using System;
+using PTM.Application.Exceptions;
 using PTM.Application.Interfaces.Services;
 using PTM.Application.Mappers;
 using PTM.Contracts.Requests;
@@ -16,26 +17,19 @@ public class UserService : IUserService
     {
         this.repository = repository;
     }
-    public async Task<UserResponse> AddAsync(UserRegisterRequest user)
-    {
-        var newUser = user.MapToUser();
-        var record = await repository.AddAsync(newUser);
-        return record.MapToUserResponse();
-    }
-
     public async Task<IEnumerable<UserResponse>> GetAllAsync() => (await repository.GetAllAsync()).MapToUsersResponse();
 
-    public async Task<UserResponse?> GetByIdAsync(Guid id)
+    public async Task<UserResponse> GetByIdAsync(Guid id)
     {
         var record = await repository.GetByIdAsync(id);
-        if (record is null) return null;
+        if (record is null) throw new NotFoundException("User");
         return record.MapToUserResponse();
     }
 
-    public async Task<UserResponse?> UpdateAsync(Guid id, UserUpdateRequest request)
+    public async Task<UserResponse> UpdateAsync(Guid id, UserUpdateRequest request)
     {
         var record = await repository.GetByIdAsync(id);
-        if (record is null) return null;
+        if (record is null) throw new NotFoundException("User");
         request.Id = record.Id;
         var updated = request.MapToUser(record);
         await repository.UpdateAsync(updated);
