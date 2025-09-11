@@ -68,7 +68,7 @@ public class AuthService : IAuthService
     public async Task<RefreshTokenResponse> RefreshToken(string refreshToken)
     {
         var revoked = await refreshTokenService.GenerateAndRevokeRefreshTokenAsync(refreshToken);
-        if (revoked is null) throw new NotFoundException("Token");
+        if (revoked is null) throw new NotFoundException("Your session has expired.");
         return new RefreshTokenResponse { AccessToken = revoked.AccessToken, RefreshToken = revoked.RefreshToken };
     }
 
