@@ -41,7 +41,7 @@ namespace PTM.API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
         {
-            var res = await authService.RefreshToken(request.RefreshToken);
+            var res = await authService.RefreshToken(request);
             return Ok(ApiResponse<RefreshTokenResponse>.SuccessResponse(res, "Refresh token generated.", HttpContext.TraceIdentifier));
         }
         [HttpPatch("update-password")]

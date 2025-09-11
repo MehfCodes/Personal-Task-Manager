@@ -16,7 +16,7 @@ using PTM.Infrastructure.Repository;
 
 namespace PTM.Application.Services;
 
-public class AuthService : IAuthService
+public class AuthService : BaseService, IAuthService
 {
     private readonly IUserRepository repository;
     private readonly ITokenGenerator tokenGenerator;
@@ -30,7 +30,8 @@ public class AuthService : IAuthService
     IRefreshTokenService refreshTokenService,
     IRequestContext requestContext,
     IResetPasswordRepository resetPasswordRepository,
-    ISmtpEmailSender smtpEmailSender)
+    ISmtpEmailSender smtpEmailSender,
+    IServiceProvider serviceProvider) : base(serviceProvider)
     {
         this.repository = repository;
         this.tokenGenerator = tokenGenerator;
@@ -44,6 +45,7 @@ public class AuthService : IAuthService
 
     public async Task<UserResponse> Register(UserRegisterRequest request)
     {
+        await ValidateAsync(request);
         var newUser = request.MapToUser();
         var record = await repository.AddAsync(newUser);
         var res = record.MapToUserResponse();
@@ -55,6 +57,7 @@ public class AuthService : IAuthService
 
     public async Task<UserResponse> Login(UserLoginRequest request)
     {
+         await ValidateAsync(request);
         var user = await repository.GetUserByEmail(request.Email!);
         if (user is null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password)) throw new UnauthorizedException("Invalid username or password.");
         var res = user.MapToUserResponse();
@@ -65,15 +68,17 @@ public class AuthService : IAuthService
         return res;
     }
 
-    public async Task<RefreshTokenResponse> RefreshToken(string refreshToken)
+    public async Task<RefreshTokenResponse> RefreshToken(RefreshTokenRequest request)
     {
-        var revoked = await refreshTokenService.GenerateAndRevokeRefreshTokenAsync(refreshToken);
-        if (revoked is null) throw new NotFoundException("Your session has expired.");
-        return new RefreshTokenResponse { AccessToken = revoked.AccessToken, RefreshToken = revoked.RefreshToken };
+        await ValidateAsync(request);
+        var rt = await refreshTokenService.GenerateAndRevokeRefreshTokenAsync(request.RefreshToken);
+        if (rt is null) throw new NotFoundException("Your session has expired.");
+        return new RefreshTokenResponse { AccessToken = rt.AccessToken, RefreshToken = rt.RefreshToken };
     }
 
     public async Task<UpdatePasswordResponse> UpdatePassword(UpdatePasswordRequest request)
     {
+        await ValidateAsync(request);
         if (!userIdReq.HasValue) throw new UnauthorizedException();
         var user = await repository.GetByIdAsync(userIdReq.Value);
         if (user is null) throw new NotFoundException("User");
@@ -92,6 +97,7 @@ public class AuthService : IAuthService
     }
     public async Task<ForgotPasswordResponse> ForgotPassword(ForgotPasswordRequest request)
     {
+        await ValidateAsync(request);
         var user = await repository.GetUserByEmail(request.Email);
         if (user == null) throw new NotFoundException("User");
         var resetPasswordToken = Guid.NewGuid().ToString("N");
@@ -109,6 +115,7 @@ public class AuthService : IAuthService
     }
     public async Task<ResetPasswordResponse> ResetPassword(ResetPasswordRequest request)
     {
+        await ValidateAsync(request);
         var hashedToken = tokenGenerator.HashToken(request.Token);
         var user = await repository.GetUserByEmail(request.Email);
         if (user is null) throw new NotFoundException("User");
