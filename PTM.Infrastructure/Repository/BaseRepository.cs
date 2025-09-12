@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using PTM.Infrastructure.Database;
 
@@ -24,7 +25,15 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
     {
         return await dbSet.FindAsync(id);
     }
+    public async Task<T?> GetByIdAsync(Guid id, params Expression<Func<T, object>>[] includes)
+    {
+        IQueryable<T> query = dbSet;
 
+        foreach (var include in includes)
+            query = query.Include(include);
+
+        return await query.FirstOrDefaultAsync(e => EF.Property<Guid>(e, "Id") == id);
+    }
     public async Task<IEnumerable<T>> GetAllAsync()
     {
         return await dbSet.ToListAsync();
