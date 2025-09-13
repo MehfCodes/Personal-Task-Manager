@@ -16,12 +16,11 @@ public static class UserPlanContractMapper
             IsActive = userPlan.IsActive,
             PurchasedAt = userPlan.PurchasedAt,
             ExpiredAt = userPlan.ExpiredAt,
-            
         };
     }
-    public static UserPlanDetailResponse MapToUserPlanDetailResponse(this UserPlan userPlan)
+    public static UserPlanResponse MapToUserPlanDetailResponse(this UserPlan userPlan)
     {
-        return new UserPlanDetailResponse
+        return new UserPlanResponse
         {
             Id = userPlan.Id,
             UserId = userPlan.UserId,
@@ -29,9 +28,22 @@ public static class UserPlanContractMapper
             IsActive = userPlan.IsActive,
             PurchasedAt = userPlan.PurchasedAt,
             ExpiredAt = userPlan.ExpiredAt,
+            Plan = userPlan.Plan?.MapToPlanResponse(),
             User = userPlan.User?.MapToUserResponse(),
+        };
+    }
+    public static UserPlanResponse MapToUserPlanWithPlanDetailResponse(this UserPlan userPlan)
+    {
+        return new UserPlanResponse
+        {
+            Id = userPlan.Id,
+            UserId = userPlan.UserId,
+            PlanId = userPlan.PlanId,
+            IsActive = userPlan.IsActive,
+            PurchasedAt = userPlan.PurchasedAt,
+            ExpiredAt = userPlan.ExpiredAt,
             Plan = userPlan.Plan?.MapToPlanResponse(),
         };
     }
-    public static IEnumerable<UserPlanResponse> MapToUserPlansResponse(this IEnumerable<UserPlan> userPlans) => userPlans.Select(MapToUserPlanResponse);
+    public static IEnumerable<UserPlanResponse> MapToUserPlansResponse(this IEnumerable<UserPlan> userPlans) => userPlans.Select(MapToUserPlanWithPlanDetailResponse);
 }
