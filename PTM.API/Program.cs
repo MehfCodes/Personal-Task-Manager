@@ -29,8 +29,8 @@ builder.Services.AddExceptionHandlers();
 var app = builder.Build();
 
 // Custom middlewares
-app.UseMiddleware<ProtectedRoute>();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseMiddleware<ProtectedRoute>();
 
 app.UseAuthentication();
 app.UseAuthorization();
