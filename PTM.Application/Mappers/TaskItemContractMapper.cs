@@ -35,6 +35,6 @@ public static class TaskItemContractMapper
             Priority = taskItem.Priority.ToString()
         };
     }
-    public static IEnumerable<TaskItemResponse> MapToTaskItemsResponse(this IEnumerable<TaskItem> taskItem) => taskItem.Select(MapToTakItemResponse);
+    public static IEnumerable<TaskItemResponse> MapToTaskItemsResponse(this IEnumerable<TaskItem> taskItem) => taskItem.Select(MapToTaskItemResponse);
   
 }
