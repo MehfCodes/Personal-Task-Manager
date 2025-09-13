@@ -16,7 +16,10 @@ public class PlanValidatorRules : AbstractValidator<BasePlanRequest>
     public PlanValidatorRules()
     {
         RuleFor(x => x.Title)
-        .NotEmpty().WithMessage("Please Enter the Title");
+        .NotEmpty().WithMessage("Please Enter the Title")
+        .Must(title =>
+        Enum.TryParse<PlanTitle>(title, true, out var result) &&
+        Enum.IsDefined(result)).WithMessage("Title should be Free, Premium or Business");
 
         RuleFor(x => x.Description)
         .NotNull().WithMessage("Please Enter the description");
@@ -26,7 +29,7 @@ public class PlanValidatorRules : AbstractValidator<BasePlanRequest>
 
         RuleFor(x => x.Price)
         .GreaterThan(0).WithMessage("Price must be more than zero")
-        .When(x => !CheckFreeTitle(x));
+        .When(price => !CheckFreeTitle(price));
 
         RuleFor(x => x.Price)
         .Equal(0).WithMessage("Price must be zero for a free plan")
