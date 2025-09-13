@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using PTM.Application.Exceptions;
 using PTM.Application.Interfaces;
 using PTM.Application.Interfaces.Repositories;
 using PTM.Application.Interfaces.Services;
@@ -38,10 +39,9 @@ public class ProtectedRoute
         var token = httpContext.Request.Headers.Authorization.FirstOrDefault()?.Split(" ").Last();
         if (string.IsNullOrEmpty(token))
         {
-            httpContext.Response.StatusCode = 401;
-            await httpContext.Response.WriteAsync("Token is missing");
-            return;
+            throw new UnauthorizedException("Token is missing");
         }
+
         try
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -54,6 +54,7 @@ public class ProtectedRoute
                 ValidateAudience = true,
                 ValidIssuer = JwtOpt.Issuer,
                 ValidAudience = JwtOpt.Audience,
+                ValidateLifetime = true,
                 ClockSkew = TimeSpan.Zero
             }, out SecurityToken validatedToken);
 
@@ -63,33 +64,36 @@ public class ProtectedRoute
 
             if (string.IsNullOrEmpty(userIdClaim))
             {
-                httpContext.Response.StatusCode = 401;
-                await httpContext.Response.WriteAsync("Invalid token");
-                return;
+                throw new UnauthorizedException("Invalid Token");
             }
             var user = await userRepository.GetByIdAsync(Guid.Parse(userIdClaim));
             if (user == null)
             {
-                httpContext.Response.StatusCode = 401;
-                await httpContext.Response.WriteAsync("User not found");
-                return;
+                throw new UnauthorizedException("User not found");
             }
 
 
             var rt = await refreshTokenRepository.GetRefreshTokenByUserId(Guid.Parse(userIdClaim), ipAddress, userAgent);
             if (rt is null || rt.Jti.ToString() != jti)
             {
-                httpContext.Response.StatusCode = 401;
-                await httpContext.Response.WriteAsync("Token revoked or invalid.");
-                return;
+                throw new UnauthorizedException("Session is no longer valid.");
             }
             await next(httpContext);
         }
-        catch (Exception e)
+        catch (SecurityTokenExpiredException)
         {
-            httpContext.Response.StatusCode = 401;
-            await httpContext.Response.WriteAsync(e.Message);
+            throw new UnauthorizedException("Your session has expired. Please login again.");
         }
-
+        catch (SecurityTokenValidationException)
+        {
+            throw new UnauthorizedException("Invalid authentication information.");
+        }
+        catch (Exception)
+        {
+            throw new UnauthorizedException("Authentication failed.");
+        }
     }
+       
+
+    
 }
