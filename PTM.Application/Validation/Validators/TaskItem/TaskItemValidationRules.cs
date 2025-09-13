@@ -9,9 +9,7 @@ public class TaskItemValidationRules : AbstractValidator<BaseTaskItemRequest>
 {
     public TaskItemValidationRules()
     {
-        var allowedStatuses = new[] { "Todo", "InProgress", "Done" };
-        var allowedPriority = new[] { "Low", "Mid", "High" };
-
+        
         RuleFor(x => x.Title)
         .NotEmpty().WithMessage("Please Enter the Title");
 
@@ -20,13 +18,16 @@ public class TaskItemValidationRules : AbstractValidator<BaseTaskItemRequest>
 
         RuleFor(x => x.Priority)
         .NotEmpty().WithMessage("Please Enter the priority")
-        .Must(value => allowedPriority.Contains(value))
-        .WithMessage("Invalid priority value");
-
+        .Must(priority=>
+        Enum.TryParse<Priority>(priority, true, out var result) &&
+        Enum.IsDefined(result)).WithMessage("Invalid priority value");
+        
 
         RuleFor(x => x.Status)
         .NotEmpty().WithMessage("Please Enter the status")
-        .Must(value =>  allowedStatuses.Contains(value))
+        .Must(status=>
+        Enum.TryParse<Status>(status, true, out var result) &&
+        Enum.IsDefined(result))
         .WithMessage("Only Todo, InProgress and Done are allowed");
     }
 }
