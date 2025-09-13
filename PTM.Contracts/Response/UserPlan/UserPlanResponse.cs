@@ -10,4 +10,6 @@ public class UserPlanResponse
     public bool IsActive { get; set; }
     public DateTime PurchasedAt { get; set; }
     public DateTime ExpiredAt { get; set; }
+    public UserResponse? User { get; set; }
+    public PlanResponse? Plan { get; set; }
 }
