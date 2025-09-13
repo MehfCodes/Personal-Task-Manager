@@ -88,10 +88,7 @@ public class ProtectedRoute
         {
             throw new UnauthorizedException("Invalid authentication information.");
         }
-        catch (Exception)
-        {
-            throw new UnauthorizedException("Authentication failed.");
-        }
+        
     }
        
 
