@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PTM.Application.Mappers;
 using PTM.Contracts.Requests;
+using PTM.Contracts.Requests.TaskItem;
 using PTM.Contracts.Response;
+using PTM.Contracts.Response.TaskItem;
 
 namespace PTM.API.Controllers
 {
@@ -49,6 +51,18 @@ namespace PTM.API.Controllers
         {
             await taskItemService.DeleteAsync(id);
             return Ok(ApiResponse<MessageResponse>.SuccessResponse(new MessageResponse { Massage = "Deleted." }, "Task deleted successfully.", HttpContext.TraceIdentifier));
+        }
+        [HttpPatch("{id:guid}/status")]
+        public async Task<IActionResult> ChangeStatus(Guid id, [FromBody] ChangeStatusRequest statusRequest)
+        {
+            var res = await taskItemService.ChangeStatus(id, statusRequest);
+            return Ok(ApiResponse<ChangeStatusResponse>.SuccessResponse(res, "Task status changed successfully.", HttpContext.TraceIdentifier));
+        }
+        [HttpPatch("{id:guid}/priority")]
+        public async Task<IActionResult> ChangePriority(Guid id, [FromBody] ChangePriorityRequest priorityRequest)
+        {
+            var res = await taskItemService.ChangePriority(id, priorityRequest);
+            return Ok(ApiResponse<ChangePriorityResponse>.SuccessResponse(res, "Task priority changed successfully.", HttpContext.TraceIdentifier));
         }
        
     }
