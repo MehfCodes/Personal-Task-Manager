@@ -1,6 +1,9 @@
 using System;
 using PTM.Contracts.Requests;
+using PTM.Contracts.Requests.TaskItem;
 using PTM.Contracts.Response;
+using PTM.Contracts.Response.TaskItem;
+using PTM.Domain.Models;
 
 namespace PTM.Application.Mappers;
 
@@ -11,4 +14,6 @@ public interface ITaskItemService
     Task<IEnumerable<TaskItemResponse>> GetAllAsync();
     Task<TaskItemResponse> UpdateAsync(Guid id, TaskItemUpdateRequest taskItem);
     Task DeleteAsync(Guid id);
+    Task<ChangeStatusResponse> ChangeStatus(Guid id, ChangeStatusRequest request);
+    Task<ChangePriorityResponse> ChangePriority(Guid id, ChangePriorityRequest request);
 }
