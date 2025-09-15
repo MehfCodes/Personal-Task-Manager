@@ -120,7 +120,7 @@ public class AuthService : BaseService, IAuthService
         var user = await repository.GetUserByEmail(request.Email);
         if (user is null) throw new NotFoundException("User");
         var resetPassword = await resetPasswordRepository.GetResetPasswordByToken(hashedToken, user.Id);
-        if (resetPassword is null) throw new UnauthorizedAccessException("The request could not be authorized.");
+        if (resetPassword is null) throw new UnauthorizedException("The request could not be authorized.");
         user.Password = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
         user.PasswordChangedAt = DateTime.UtcNow;
         await repository.UpdateAsync(user);
