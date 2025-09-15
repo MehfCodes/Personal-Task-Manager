@@ -91,7 +91,7 @@ public class AuthService : BaseService, IAuthService
     }
     public async Task<LogoutResponse> Logout()
     {
-        if (!userIdReq.HasValue) throw new UnauthorizedAccessException();
+        if (!userIdReq.HasValue) throw new UnauthorizedException();
         await refreshTokenService.RevokePreviousToken(userIdReq.Value);
         return new LogoutResponse { Massage = "you logout." };
     }
