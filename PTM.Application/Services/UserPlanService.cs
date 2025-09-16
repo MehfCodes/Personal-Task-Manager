@@ -34,8 +34,8 @@ public class UserPlanService : BaseService, IUserPlanService
     public async Task<UserPlanResponse> Purchase(Guid planId)
     {
         //deactive previous plans
-        var activePlan = await GetActiveUserPlanByUserId(userIdReq!.Value);
-        if (activePlan != null) throw new BusinessRuleException("You already have a active plan, please deactive it and then purchase new one.");
+        var activePlan = await HasActivePlan(userIdReq!.Value);
+        if (activePlan) throw new BusinessRuleException("You already have a active plan, please deactive it and then purchase new one.");
         var plan = await planRepository.GetByIdAsync(planId);
         if (plan is null) throw new NotFoundException("Plan");
         var purchasedPlan = new UserPlan
@@ -48,7 +48,7 @@ public class UserPlanService : BaseService, IUserPlanService
 
         };
         await userPlanRepository.AddAsync(purchasedPlan);
-        return purchasedPlan.MapToUserPlanResponse();
+        return purchasedPlan.MapToUserPlanWithPlanDetailResponse();
     }
 
     public async Task<UserPlanResponse> GetUserPlanById(Guid userPlanId)
@@ -65,6 +65,14 @@ public class UserPlanService : BaseService, IUserPlanService
         var activeUserPlan = user.UserPlans.Where(up => up.IsActive == true && up.ExpiredAt > DateTime.UtcNow).FirstOrDefault();
         if (activeUserPlan is null) throw new NotFoundException("User plan");
         return activeUserPlan.MapToUserPlanWithPlanDetailResponse();
+    }
+    public async Task<bool> HasActivePlan(Guid userId)
+    {
+        var user = await userRepository.GetByIdAsync(userId, u => u.UserPlans);
+        if (user is null) throw new NotFoundException("User");
+        var activeUserPlan = user.UserPlans.Where(up => up.IsActive == true && up.ExpiredAt > DateTime.UtcNow).FirstOrDefault();
+        if (activeUserPlan is null) return false;
+        return true;
     }
 
     public async Task<IEnumerable<UserPlanResponse>> GetAllUserPlansByUserId(Guid userId)

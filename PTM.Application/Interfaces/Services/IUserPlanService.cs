@@ -9,6 +9,7 @@ public interface IUserPlanService
     Task<UserPlanResponse> Purchase(Guid planId);
     Task<UserPlanResponse> GetUserPlanById(Guid userPlanId);
     Task<UserPlanResponse> GetActiveUserPlanByUserId(Guid userId);
+    Task<bool> HasActivePlan(Guid userId);
     Task<IEnumerable<UserPlanResponse>> GetAllUserPlansByUserId(Guid userId);
     Task<IEnumerable<UserResponse>> GetAllUsersByPlanId(Guid planId);
     Task<UserPlanResponse> DeactivateAsync(Guid userPlanId);
