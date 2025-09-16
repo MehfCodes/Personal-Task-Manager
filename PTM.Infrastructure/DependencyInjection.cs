@@ -31,6 +31,7 @@ public static class DependencyInjection
         services.AddScoped<IPlanRepository, PlanRepository>();
         services.AddScoped<ITokenGenerator, TokenGenerator>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ITaskItemRepository, TaskItemRepository>();
         services.AddHttpContextAccessor();
         services.AddScoped<IRequestContext, RequestContext>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
