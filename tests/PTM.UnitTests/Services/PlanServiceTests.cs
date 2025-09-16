@@ -92,7 +92,7 @@ public class PlanServiceTests
         Assert.Equal(expectedPlan.Title.ToString(), result.Title);
     }
     [Fact]
-    public async Task GetPlanByIdAsync_ShouldReturnPlan_WhenPlanNotExists()
+    public async Task GetPlanByIdAsync_ShouldThrowNotFoundException_WhenPlanNotExists()
     {
         // Arrange
         var planId = Guid.NewGuid();
