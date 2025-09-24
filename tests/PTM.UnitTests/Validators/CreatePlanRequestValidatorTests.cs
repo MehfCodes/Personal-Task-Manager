@@ -9,12 +9,10 @@ namespace PTM.UnitTests.Validators;
 
 public class CreatePlanRequestValidatorTests
 {
-    private readonly ITestOutputHelper output;
     private readonly PlanRequestValidator validator = new();
 
-    public CreatePlanRequestValidatorTests(ITestOutputHelper output)
+    public CreatePlanRequestValidatorTests()
     {
-        this.output = output;
     }
     [Fact]
     public async Task ValidateAsync_ShouldBeValid_WhenModelIsCorrect()
