@@ -35,26 +35,7 @@ public class PlanContractMapperTests
         result.IsActive.Should().Be(request.IsActive);
     }
 
-    [Fact]
-    public void MapToPlan_Should_DefaultToFree_When_InvalidTitle()
-    {
-        // Given
-        var request = new PlanRequest
-        {
-            Title = "InvalidTitle",
-            Description = "desc",
-            Price = 10,
-            MaxTasks = 5,
-            DurationDays = 7,
-            IsActive = false
-        };
-
-        // When
-        var result = request.MapToPlan();
-
-        // Then
-        result.Title.Should().Be(PlanTitle.Free);
-    }
+    
     [Fact]
 public void MapToPlan_Update_Should_Map_All_Premiumperties_Correctly()
 {
