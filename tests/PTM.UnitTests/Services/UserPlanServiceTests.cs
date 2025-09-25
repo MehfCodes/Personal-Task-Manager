@@ -1,6 +1,7 @@
 using System;
 using System.Linq.Expressions;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using PTM.Application.Exceptions;
 using PTM.Application.Interfaces;
@@ -21,7 +22,7 @@ public class UserPlanServiceTests
     private readonly Mock<IRequestContext> requestContextMock = new();
     private readonly UserPlanService userPlanService;
     private readonly Guid userId = Guid.NewGuid();
-
+    private readonly Mock<ILogger<UserPlanService>> loggerMock = new();
     public UserPlanServiceTests()
     {
         requestContextMock.Setup(r => r.GetUserId()).Returns(userId);
@@ -30,6 +31,7 @@ public class UserPlanServiceTests
             planRepoMock.Object,
             userRepoMock.Object,
             requestContextMock.Object,
+            loggerMock.Object,
             userPlanRepoMock.Object
         );
     }
