@@ -1,5 +1,7 @@
 
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using PTM.Application.Exceptions;
 using PTM.Application.Interfaces;
@@ -23,8 +25,9 @@ public class AuthServiceTests
     private readonly Mock<IRequestContext> requestContextNullMock = new();
     private readonly Mock<IResetPasswordRepository> resetRepoMock = new();
     private readonly Mock<ISmtpEmailSender> smtpMock = new();
-    private readonly Mock<IServiceProvider> serviceProviderMock = new();
     private readonly Guid? userIdReq = Guid.NewGuid();
+    private readonly Mock<IServiceProvider> serviceProviderMock = new();
+    private readonly Mock<ILogger<AuthService>> loggerMock = new();
     private readonly AuthService authService;
     private readonly AuthService authServiceFail;
 
@@ -32,7 +35,6 @@ public class AuthServiceTests
     {
         requestContextMock.Setup(repo => repo.GetUserId()).Returns(userIdReq);
         requestContextNullMock.Setup(repo => repo.GetUserId()).Returns((Guid?)null);
-
         authService = new AuthService(
             userRepoMock.Object,
             tokenGenMock.Object,
@@ -40,8 +42,10 @@ public class AuthServiceTests
             requestContextMock.Object,
             resetRepoMock.Object,
             smtpMock.Object,
-            serviceProviderMock.Object
-        );
+            serviceProviderMock.Object,
+            loggerMock.Object
+            );
+
         authServiceFail = new AuthService(
             userRepoMock.Object,
             tokenGenMock.Object,
@@ -49,7 +53,8 @@ public class AuthServiceTests
             requestContextNullMock.Object,
             resetRepoMock.Object,
             smtpMock.Object,
-            serviceProviderMock.Object
+            serviceProviderMock.Object,
+            loggerMock.Object
         );
     }
 
