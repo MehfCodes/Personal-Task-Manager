@@ -13,15 +13,15 @@ public static class TaskItemContractMapper
         {
             Title = request.Title,
             Description = request.Description,
-            Status = Enum.TryParse(request.Status, true, out Status status) ? status : Status.Todo,
-            Priority = Enum.TryParse(request.Priority, true, out Priority priority) ? priority : Priority.Mid,
+            Status = Enum.Parse<Status>(request.Status, true),
+            Priority = Enum.Parse<Priority>(request.Priority, true),
         };
     }
     public static TaskItem MapToTaskItem(this TaskItemUpdateRequest request, TaskItem taskItem)
 {       taskItem.Title = request.Title;
         taskItem.Description = request.Description;
-        taskItem.Status = Enum.TryParse(request.Status, true, out Status status) ? status : Status.Todo;
-        taskItem.Priority = Enum.TryParse(request.Priority, true, out Priority priority) ? priority : Priority.Mid;
+        taskItem.Status = Enum.Parse<Status>(request.Status, true);
+        taskItem.Priority = Enum.Parse<Priority>(request.Priority, true);
         return taskItem;
     }
     public static TaskItemResponse MapToTaskItemResponse(this TaskItem taskItem)

@@ -11,7 +11,7 @@ public static class PlanContractMapper
         
         return new Plan
         {
-            Title = Enum.TryParse(planRequest.Title, true, out PlanTitle ParsedTitle) ? ParsedTitle : PlanTitle.Free,
+            Title = Enum.Parse<PlanTitle>(planRequest.Title!, true),
             Description = planRequest.Description,
             Price = planRequest.Price,
             MaxTasks = planRequest.MaxTasks,
@@ -21,7 +21,7 @@ public static class PlanContractMapper
     }
     public static Plan MapToPlan(this PlanUpdateRequest planRequest, Plan plan) {
         plan.Id = planRequest.Id;
-        plan.Title = Enum.TryParse(planRequest.Title, true, out PlanTitle ParsedTitle) ? ParsedTitle : PlanTitle.Free;
+        plan.Title = Enum.Parse<PlanTitle>(planRequest.Title!, true);
         plan.Description = planRequest.Description ?? "";
         plan.Price = planRequest.Price;
         plan.MaxTasks = planRequest.MaxTasks;
