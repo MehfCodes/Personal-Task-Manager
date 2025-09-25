@@ -1,4 +1,5 @@
 using System;
+using Microsoft.Extensions.Logging;
 using PTM.Application.Exceptions;
 using PTM.Application.Interfaces;
 using PTM.Application.Interfaces.Repositories;
@@ -17,17 +18,20 @@ public class UserPlanService : BaseService, IUserPlanService
     private readonly IUserRepository userRepository;
     private readonly IBaseRepository<UserPlan> userPlanRepository;
     private readonly IRequestContext requestContext;
+    private readonly ILogger<UserPlanService> logger;
     private Guid? userIdReq;
     public UserPlanService(IServiceProvider serviceProvider,
      IPlanRepository planRepository,
      IUserRepository userRepository,
      IRequestContext requestContext,
+     ILogger<UserPlanService> logger,
      IBaseRepository<UserPlan> userPlanRepository) : base(serviceProvider)
     {
         this.planRepository = planRepository;
         this.userRepository = userRepository;
         this.userPlanRepository = userPlanRepository;
         this.requestContext = requestContext;
+        this.logger = logger;
         userIdReq = requestContext.GetUserId();
     }
 
@@ -48,6 +52,7 @@ public class UserPlanService : BaseService, IUserPlanService
 
         };
         await userPlanRepository.AddAsync(purchasedPlan);
+        logger.LogInformation("User {UserId} purchased the Plan {PlanId} at {Time}", purchasedPlan.UserId, purchasedPlan.PlanId, DateTime.UtcNow);
         return purchasedPlan.MapToUserPlanWithPlanDetailResponse();
     }
 
@@ -97,6 +102,7 @@ public class UserPlanService : BaseService, IUserPlanService
         if (!up.IsActive || up.ExpiredAt < DateTime.UtcNow) throw new BusinessRuleException("Your plan is already deactivated.");
         up.IsActive = false;
         await userPlanRepository.UpdateAsync(up);
+        logger.LogInformation("User {UserId} deactive the Plan {PlanId} at {Time}", up.UserId, up.PlanId, DateTime.UtcNow);
         return up.MapToUserPlanResponse();
     }
 }
