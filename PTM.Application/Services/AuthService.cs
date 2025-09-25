@@ -78,6 +78,7 @@ public class AuthService : BaseService, IAuthService
         await ValidateAsync(request);
         var rt = await refreshTokenService.GenerateAndRevokeRefreshTokenAsync(request.RefreshToken);
         if (rt is null) throw new NotFoundException("Your session has expired.");
+        logger.LogInformation("Token Refreshed for User {UserId} at {Time}", userIdReq!.Value, DateTime.UtcNow);
         return new RefreshTokenResponse { AccessToken = rt.AccessToken, RefreshToken = rt.RefreshToken };
     }
 
