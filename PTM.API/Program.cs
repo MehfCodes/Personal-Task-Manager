@@ -18,6 +18,12 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     .Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: false));
 });
 builder.Services.AddEndpointsApiExplorer();
+
+// Logs
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug(); 
+
 // builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
 

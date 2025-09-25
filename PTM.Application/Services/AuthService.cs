@@ -1,5 +1,6 @@
 using System;
 using BCrypt.Net;
+using Microsoft.Extensions.Logging;
 using PTM.Application.Exceptions;
 using PTM.Application.Interfaces;
 using PTM.Application.Interfaces.Authentication;
@@ -24,6 +25,7 @@ public class AuthService : BaseService, IAuthService
     private readonly IRequestContext requestContext;
     private readonly IResetPasswordRepository resetPasswordRepository;
     private readonly ISmtpEmailSender smtpEmailSender;
+    private readonly ILogger<AuthService> logger;
     private Guid? userIdReq;
     public AuthService(IUserRepository repository,
     ITokenGenerator tokenGenerator,
@@ -31,6 +33,7 @@ public class AuthService : BaseService, IAuthService
     IRequestContext requestContext,
     IResetPasswordRepository resetPasswordRepository,
     ISmtpEmailSender smtpEmailSender,
+    ILogger<AuthService> logger,
     IServiceProvider serviceProvider) : base(serviceProvider)
     {
         this.repository = repository;
@@ -39,7 +42,7 @@ public class AuthService : BaseService, IAuthService
         this.requestContext = requestContext;
         this.resetPasswordRepository = resetPasswordRepository;
         this.smtpEmailSender = smtpEmailSender;
-        
+        this.logger = logger;
         userIdReq = requestContext.GetUserId();
     }
 
@@ -52,12 +55,13 @@ public class AuthService : BaseService, IAuthService
         var (raw, rt) = await refreshTokenService.CreateRefreshTokenAsync(newUser);
         res.AccessToken = tokenGenerator.CreateAccessToken(newUser, rt.Jti);
         res.RefreshToken = raw;
+        logger.LogInformation("User {UserId} Registered at {Time}", res.Id, DateTime.UtcNow);
         return res;
     }
 
     public async Task<UserResponse> Login(UserLoginRequest request)
     {
-         await ValidateAsync(request);
+        await ValidateAsync(request);
         var user = await repository.GetUserByEmail(request.Email!);
         if (user is null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Password)) throw new UnauthorizedException("Invalid username or password.");
         var res = user.MapToUserResponse();
@@ -65,6 +69,7 @@ public class AuthService : BaseService, IAuthService
         var (raw, rt) = await refreshTokenService.CreateRefreshTokenAsync(user);
         res.AccessToken = tokenGenerator.CreateAccessToken(user, rt.Jti);
         res.RefreshToken = raw;
+        logger.LogInformation("User {UserId} logged in at {Time}", res.Id, DateTime.UtcNow);
         return res;
     }
 
@@ -87,12 +92,14 @@ public class AuthService : BaseService, IAuthService
         user.PasswordChangedAt = DateTime.UtcNow;
         await repository.UpdateAsync(user);
         await refreshTokenService.RevokePreviousToken(user.Id, true);
+        logger.LogInformation("User {UserId} Updated Password at {Time}", user.Id, DateTime.UtcNow);
         return new UpdatePasswordResponse { Massage = "password updated! please login." };
     }
     public async Task<LogoutResponse> Logout()
     {
         if (!userIdReq.HasValue) throw new UnauthorizedException();
         await refreshTokenService.RevokePreviousToken(userIdReq.Value);
+        logger.LogInformation("User {UserId} logged out at {Time}", userIdReq.Value, DateTime.UtcNow);
         return new LogoutResponse { Massage = "you logout." };
     }
     public async Task<ForgotPasswordResponse> ForgotPassword(ForgotPasswordRequest request)
@@ -111,6 +118,7 @@ public class AuthService : BaseService, IAuthService
         await resetPasswordRepository.AddAsync(resetPassword);
         var emailBody = $"please click on the link below to reset your password \b {requestContext.BuildResetPasswordLink(user.Email, resetPasswordToken)}";
         await smtpEmailSender.SendEmailAsync(user.Email, "Reset Password", emailBody);
+        logger.LogInformation("Reset Password Email Sent To User {UserId} at {Time}", user.Id, DateTime.UtcNow);
         return new ForgotPasswordResponse { Massage = "Check your email inbox, reset password link sent." };
     }
     public async Task<ResetPasswordResponse> ResetPassword(ResetPasswordRequest request)
@@ -121,12 +129,14 @@ public class AuthService : BaseService, IAuthService
         if (user is null) throw new NotFoundException("User");
         var resetPassword = await resetPasswordRepository.GetResetPasswordByToken(hashedToken, user.Id);
         if (resetPassword is null) throw new UnauthorizedException("The request could not be authorized.");
+        logger.LogWarning("Failed password reset attempt for user {UserId} at {Time}", user.Id, DateTime.UtcNow);
         user.Password = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
         user.PasswordChangedAt = DateTime.UtcNow;
         await repository.UpdateAsync(user);
         resetPassword.Expires = DateTime.UtcNow; 
         await resetPasswordRepository.UpdateAsync(resetPassword);
         await refreshTokenService.RevokePreviousToken(user.Id, true);
+        logger.LogInformation("Password reset successfully for user {UserId} at {Time}", user.Id, DateTime.UtcNow);
         return new ResetPasswordResponse { Massage = "password updated! please login." };
 
     }
