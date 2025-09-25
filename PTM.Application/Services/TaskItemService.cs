@@ -16,7 +16,6 @@ public class TaskItemService : BaseService, ITaskItemService
 {
     private readonly ITaskItemRepository repository;
     private readonly IUserPlanService userPlanService;
-    private readonly IRequestContext requestContext;
     private readonly Guid? userIdReq;
 
     public TaskItemService(ITaskItemRepository repository,
