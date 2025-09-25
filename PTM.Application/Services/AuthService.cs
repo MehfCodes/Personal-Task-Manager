@@ -33,8 +33,8 @@ public class AuthService : BaseService, IAuthService
     IRequestContext requestContext,
     IResetPasswordRepository resetPasswordRepository,
     ISmtpEmailSender smtpEmailSender,
-    ILogger<AuthService> logger,
-    IServiceProvider serviceProvider) : base(serviceProvider)
+    IServiceProvider serviceProvider,
+    ILogger<AuthService> logger) : base(serviceProvider)
     {
         this.repository = repository;
         this.tokenGenerator = tokenGenerator;
