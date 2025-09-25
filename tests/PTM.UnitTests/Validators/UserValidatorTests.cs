@@ -5,10 +5,10 @@ using PTM.Contracts.Requests;
 
 namespace PTM.UnitTests.Validators;
 
-public class UserRegisterRequestValidatorTests
+public class UserValidatorTests
 {
     private readonly UserRequestValidator validator = new();
-    public UserRegisterRequestValidatorTests()
+    public UserValidatorTests()
     {
 
     }

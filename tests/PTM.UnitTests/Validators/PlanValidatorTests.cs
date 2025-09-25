@@ -7,11 +7,11 @@ using Xunit.Abstractions;
 
 namespace PTM.UnitTests.Validators;
 
-public class CreatePlanRequestValidatorTests
+public class PlanValidatorTests
 {
     private readonly PlanRequestValidator validator = new();
 
-    public CreatePlanRequestValidatorTests()
+    public PlanValidatorTests()
     {
     }
     [Fact]
