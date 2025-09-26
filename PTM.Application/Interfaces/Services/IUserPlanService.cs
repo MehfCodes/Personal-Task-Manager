@@ -12,5 +12,5 @@ public interface IUserPlanService
     Task<bool> HasActivePlan(Guid userId);
     Task<IEnumerable<UserPlanResponse>> GetAllUserPlansByUserId(Guid userId);
     Task<IEnumerable<UserResponse>> GetAllUsersByPlanId(Guid planId);
-    Task<UserPlanResponse> DeactivateAsync(Guid userPlanId);
+    Task<MessageResponse> DeactivateAsync(Guid userPlanId);
 }

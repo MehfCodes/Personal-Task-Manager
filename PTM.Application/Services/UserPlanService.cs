@@ -95,7 +95,7 @@ public class UserPlanService : BaseService, IUserPlanService
         return users!.MapToUsersResponse();
     }
 
-    public async Task<UserPlanResponse> DeactivateAsync(Guid userPlanId)
+    public async Task<MessageResponse> DeactivateAsync(Guid userPlanId)
     {
         var up = await userPlanRepository.GetByIdAsync(userPlanId);
         if (up is null) throw new NotFoundException("Prchased plan");
@@ -103,6 +103,6 @@ public class UserPlanService : BaseService, IUserPlanService
         up.IsActive = false;
         await userPlanRepository.UpdateAsync(up);
         logger.LogInformation("User {UserId} deactive the Plan {PlanId} at {Time}", up.UserId, up.PlanId, DateTime.UtcNow);
-        return up.MapToUserPlanResponse();
+        return new MessageResponse { Massage = "Plan deactivated." };
     }
 }
