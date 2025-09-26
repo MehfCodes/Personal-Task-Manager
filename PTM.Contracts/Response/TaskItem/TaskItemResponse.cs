@@ -10,5 +10,4 @@ public class TaskItemResponse
     public string? Status { get; set; } 
     public string? Priority { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public UserResponse? User { get; set; }
 }
