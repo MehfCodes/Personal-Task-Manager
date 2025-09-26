@@ -32,8 +32,18 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddExceptionHandlers();
 
+// Swagger
+builder.Services.AddSwagger();
 var app = builder.Build();
-
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();             // serve swagger.json
+    app.UseSwaggerUI(c =>         // serve swagger ui
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "PTM API V1");
+        c.RoutePrefix = "swagger"; // /swagger/index.html
+    });
+}
 // Custom middlewares
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseMiddleware<ProtectedRoute>();
@@ -52,7 +62,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.MapControllers();
 
-app.MapGet("/test-api", () => "API is Working...");
+// app.MapGet("/test-api", () => "API is Working...");
 
 app.Run();
 
