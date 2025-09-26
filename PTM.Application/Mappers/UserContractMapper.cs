@@ -2,6 +2,7 @@ using System;
 using BCrypt.Net;
 using PTM.Contracts.Requests;
 using PTM.Contracts.Response;
+using PTM.Contracts.Response.UserPlan;
 using PTM.Domain.Models;
 
 namespace PTM.Application.Mappers;
@@ -34,6 +35,16 @@ public static class UserContractMapper
             Email = user.Email,
             PhoneNumber = user.PhoneNumber,
             Plans = user.UserPlans.Select(up => new PlanResponse{ Id = up.PlanId, Title = up.Plan!.Title.ToString() }).ToList(),
+        };
+    }
+    public static UserRes MapToUserForUserPlanResponse(this User user)
+    {
+        return new UserRes
+        {
+            Id = user.Id,
+            Username = user.Username,
+            Email = user.Email,
+            PhoneNumber = user.PhoneNumber,
         };
     }
     public static IEnumerable<UserResponse> MapToUsersResponse(this IEnumerable<User> users) => users.Select(MapToUserResponse);

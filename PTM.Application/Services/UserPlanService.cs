@@ -35,7 +35,7 @@ public class UserPlanService : BaseService, IUserPlanService
         userIdReq = requestContext.GetUserId();
     }
 
-    public async Task<UserPlanResponse> Purchase(Guid planId)
+    public async Task<UserPlanResponseDetail> Purchase(Guid planId)
     {
         //deactive previous plans
         var activePlan = await HasActivePlan(userIdReq!.Value);
@@ -56,14 +56,14 @@ public class UserPlanService : BaseService, IUserPlanService
         return purchasedPlan.MapToUserPlanWithPlanDetailResponse();
     }
 
-    public async Task<UserPlanResponse> GetUserPlanById(Guid userPlanId)
+    public async Task<UserPlanResponseDetail> GetUserPlanById(Guid userPlanId)
     {
         var up = await userPlanRepository.GetByIdAsync(userPlanId, up => up.User!, up => up.Plan!);
         if (up is null) throw new NotFoundException("Prchased plan");
-        return up.MapToUserPlanDetailResponse();
+        return up.MapToUserPlanWithPlanDetailResponse();
     }
 
-    public async Task<UserPlanResponse> GetActiveUserPlanByUserId(Guid userId)
+    public async Task<UserPlanResponseDetail> GetActiveUserPlanByUserId(Guid userId)
     {
         var user = await userRepository.GetByIdAsync(userId, u => u.UserPlans);
         if (user is null) throw new NotFoundException("User");
@@ -80,7 +80,7 @@ public class UserPlanService : BaseService, IUserPlanService
         return true;
     }
 
-    public async Task<IEnumerable<UserPlanResponse>> GetAllUserPlansByUserId(Guid userId)
+    public async Task<IEnumerable<UserPlanResponseDetail>> GetAllUserPlansByUserId(Guid userId)
     {
         var user = await userRepository.GetByIdAsync(userId, u => u.UserPlans);
         if (user is null) throw new NotFoundException("User");

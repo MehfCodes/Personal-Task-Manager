@@ -26,13 +26,13 @@ namespace PTM.API.Controllers
         /// <response code="201">Returns the purchased plan details.</response>
         /// <response code="400">If the request is invalid or plan cannot be purchased.</response>
         [HttpPost]
-        [ProducesResponseType(typeof(ApiResponse<UserPlanResponse>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiResponse<UserPlanResponseDetail>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Add([FromBody] UserPlanRequest request)
         {
             var res = await userPlanService.Purchase(request.PlanId);
             return CreatedAtAction(nameof(Get), new { id = res.Id },
-            ApiResponse<UserPlanResponse>.SuccessResponse(res, "Plan Bought successfully", HttpContext.TraceIdentifier));
+            ApiResponse<UserPlanResponseDetail>.SuccessResponse(res, "Plan Bought successfully", HttpContext.TraceIdentifier));
         }
         
         /// <summary>
@@ -43,12 +43,12 @@ namespace PTM.API.Controllers
         /// <response code="200">Returns the purchased plan details.</response>
         /// <response code="404">If the plan is not found.</response>
         [HttpGet("{id:guid}")]
-        [ProducesResponseType(typeof(ApiResponse<UserPlanResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<UserPlanResponseDetail>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(Guid id)
         {
             var res = await userPlanService.GetUserPlanById(id);
-            return Ok(ApiResponse<UserPlanResponse>.SuccessResponse(res, "Purchased Plan", HttpContext.TraceIdentifier));
+            return Ok(ApiResponse<UserPlanResponseDetail>.SuccessResponse(res, "Purchased Plan", HttpContext.TraceIdentifier));
         }
          /// <summary>
         /// Deactive a purchased plan by its Id.

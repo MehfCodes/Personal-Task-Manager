@@ -6,11 +6,11 @@ namespace PTM.Application.Interfaces.Services;
 
 public interface IUserPlanService
 {
-    Task<UserPlanResponse> Purchase(Guid planId);
-    Task<UserPlanResponse> GetUserPlanById(Guid userPlanId);
-    Task<UserPlanResponse> GetActiveUserPlanByUserId(Guid userId);
+    Task<UserPlanResponseDetail> Purchase(Guid planId);
+    Task<UserPlanResponseDetail> GetUserPlanById(Guid userPlanId);
+    Task<UserPlanResponseDetail> GetActiveUserPlanByUserId(Guid userId);
     Task<bool> HasActivePlan(Guid userId);
-    Task<IEnumerable<UserPlanResponse>> GetAllUserPlansByUserId(Guid userId);
+    Task<IEnumerable<UserPlanResponseDetail>> GetAllUserPlansByUserId(Guid userId);
     Task<IEnumerable<UserResponse>> GetAllUsersByPlanId(Guid planId);
     Task<MessageResponse> DeactivateAsync(Guid userPlanId);
 }
