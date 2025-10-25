@@ -1,47 +1,27 @@
-using System;
-using PTM.Application.Interfaces.Authentication;
 using PTM.Application.Interfaces.Repositories;
 using PTM.Application.Interfaces.Services;
+using PTM.Contracts.Response.Token;
 using PTM.Domain.Models;
-using PTM.Infrastructure.Repository;
 
 namespace PTM.Application.Services;
 
 public class RefreshTokenService : IRefreshTokenService
 {
     private readonly IRefreshTokenRepository repository;
-    private readonly ITokenGenerator tokenGenerator;
-    private string ipAddress;
-    private string userAgent;
+    private readonly ITokenService tokenService;
+    private readonly IRequestContext requestContext;
     public RefreshTokenService(IRefreshTokenRepository repository,
-     ITokenGenerator tokenGenerator,
+     ITokenService tokenService,
      IRequestContext requestContext)
     {
         this.repository = repository;
-        this.tokenGenerator = tokenGenerator;
-        ipAddress = requestContext.GetIpAddress() ?? "";
-        userAgent = requestContext.GetUserAgent() ?? "";
+        this.tokenService = tokenService;
+        this.requestContext = requestContext;
     }
-    public async Task<(string, RefreshToken)> CreateRefreshTokenAsync(User user)
-    {
-        var (rawToken, tokenHash, expiresAt) = tokenGenerator.CreateRefreshToken();
-        var refreshToken = new RefreshToken
-        {
-            UserId = user.Id,
-            TokenHash = tokenHash,
-            ExpiresAt = expiresAt,
-            CreatedAt = DateTime.UtcNow,
-            CreatedByIp = ipAddress,
-            UserAgent = userAgent,
-            Jti = Guid.NewGuid()
-        };
-        await repository.AddAsync(refreshToken);
-        return (rawToken, refreshToken);
-    }
-
+    
     public async Task<RefreshToken?> GetRefreshToken(string token)
     {
-        var tokenHash = tokenGenerator.HashToken(token);
+        var tokenHash = tokenService.HashToken(token);
         return await repository.GetRefreshTokenByTokenHash(tokenHash);
     }
     public async Task<RevokeResult?> GenerateAndRevokeRefreshTokenAsync(string token)
@@ -50,10 +30,10 @@ public class RefreshTokenService : IRefreshTokenService
         if (oldRefreshToken == null || oldRefreshToken.RevokedAt != null || oldRefreshToken.User == null) return null;
 
 
-        var (rawToken, newRefreshToken) = await CreateRefreshTokenAsync(oldRefreshToken.User);
+        var (rawToken, newRefreshToken) = await tokenService.CreateRefreshTokenAsync(oldRefreshToken.User);
         await RevokeRefreshToken(oldRefreshToken, newRefreshToken.Id);
 
-        var accessToken = tokenGenerator.CreateAccessToken(oldRefreshToken.User, newRefreshToken.Jti);
+        var accessToken = tokenService.CreateAccessToken(oldRefreshToken.User, newRefreshToken.Jti);
         
 
         return new RevokeResult { AccessToken = accessToken, RefreshToken = rawToken };
@@ -79,6 +59,8 @@ public class RefreshTokenService : IRefreshTokenService
         }
         else
         {
+            var ipAddress = requestContext.GetIpAddress() ?? "";
+            var userAgent = requestContext.GetUserAgent() ?? "";
             var rt = await repository.GetRefreshTokenByUserId(userId, ipAddress, userAgent);
             if (rt is not null) await RevokeRefreshToken(rt);
         }
