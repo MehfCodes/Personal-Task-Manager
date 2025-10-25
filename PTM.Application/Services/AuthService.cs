@@ -38,6 +38,7 @@ public class AuthService : BaseService, IAuthService
     {
         await ValidateAsync(request);
         var newUser = request.MapToUser();
+        newUser.Password = passwordHasher.HashPassword(request.Password);
         var record = await repository.AddAsync(newUser);
         var res = record.MapToUserResponse();
         var tokens = await tokenService.GenerateTokenPair(newUser);

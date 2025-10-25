@@ -1,5 +1,3 @@
-using System;
-using BCrypt.Net;
 using PTM.Contracts.Requests;
 using PTM.Contracts.Response;
 using PTM.Contracts.Response.UserPlan;
@@ -16,7 +14,6 @@ public static class UserContractMapper
             Username = request.Username,
             Email = request.Email,
             PhoneNumber = request.PhoneNumber,
-            Password = BCrypt.Net.BCrypt.HashPassword(request.Password)
         };
     }
     public static User MapToUser(this UserUpdateRequest request, User user)
