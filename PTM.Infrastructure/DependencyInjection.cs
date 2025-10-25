@@ -37,6 +37,7 @@ public static class DependencyInjection
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IResetPasswordRepository, ResetPasswordRepository>();
         services.AddScoped<ISmtpEmailSender, SmtpEmailSender>();
+        services.AddScoped<IPasswordHasher, PasswordHasher>();
 
         var HashSecret = config.GetSection("HashSecret");
         services.Configure<HashSecret>(HashSecret);

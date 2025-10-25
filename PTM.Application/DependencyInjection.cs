@@ -16,7 +16,10 @@ public static class DependencyInjection
         services.AddScoped<ITaskItemService, TaskItemService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IRefreshTokenService, RefreshTokenService>(); 
-        services.AddScoped<IUserPlanService, UserPlanService>(); 
+        services.AddScoped<IUserPlanService, UserPlanService>();
+        services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IUserPasswordService, UserPasswordService>();
+        services.AddScoped<ITokenService, TokenService>();
         services.AddValidatorsFromAssemblyContaining<ValidationAssemblyMarker>();
         return services;
     }
