@@ -28,7 +28,6 @@ public static class DependencyInjection
 
         // add scoped
         services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
-        services.AddScoped<IPlanRepository, PlanRepository>();
         services.AddScoped<ITokenGenerator, TokenGenerator>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ITaskItemRepository, TaskItemRepository>();
