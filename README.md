@@ -6,8 +6,8 @@
 
 <p align="center">
   <!-- Badges -->
-  <img src="https://img.shields.io/github/actions/workflow/status/MehfCodes/Personal-Task-Manager/dotnet.yml?style=flat-square&logo=github&label=Build" alt="Build"/>
-  <img src="https://img.shields.io/github/license/MehfCodes/Personal-Task-Manager?style=flat-square&color=blue" alt="License"/>
+  <!-- <img src="https://img.shields.io/github/actions/workflow/status/MehfCodes/Personal-Task-Manager/dotnet.yml?style=flat-square&logo=github&label=Build" alt="Build"/>
+  <img src="https://img.shields.io/github/license/MehfCodes/Personal-Task-Manager?style=flat-square&color=blue" alt="License"/> -->
   <img src="https://img.shields.io/badge/.NET-9.0-512BD4?style=flat-square&logo=dotnet&logoColor=white" alt=".NET 9"/>
   <img src="https://img.shields.io/badge/Entity_Framework_Core-9.0-512BD4?style=flat-square&logo=efcore&logoColor=white" alt="EF Core 9"/>
   <img src="https://img.shields.io/badge/Swagger-UI-85EA2D?style=flat-square&logo=swagger&logoColor=black" alt="Swagger UI"/>
