@@ -1,7 +1,9 @@
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using PTM.Application.Interfaces.Policies;
 using PTM.Application.Interfaces.Services;
 using PTM.Application.Mappers;
+using PTM.Application.Policies;
 using PTM.Application.Services;
 using PTM.Application.Validation;
 
@@ -19,7 +21,9 @@ public static class DependencyInjection
         services.AddScoped<IUserPlanService, UserPlanService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IUserPasswordService, UserPasswordService>();
-        services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<ITaskItemPolicy, ActivePlanPolicy>();
+        services.AddScoped<ITaskItemPolicy, MaxTasksPolicy>();
+        services.AddScoped<ICompositePolicy, CompositePolicy>();
         services.AddValidatorsFromAssemblyContaining<ValidationAssemblyMarker>();
         return services;
     }

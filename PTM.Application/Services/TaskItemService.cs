@@ -1,5 +1,6 @@
 using System;
 using PTM.Application.Exceptions;
+using PTM.Application.Interfaces.Policies;
 using PTM.Application.Interfaces.Repositories;
 using PTM.Application.Interfaces.Services;
 using PTM.Application.Mappers;
@@ -16,25 +17,26 @@ public class TaskItemService : BaseService, ITaskItemService
 {
     private readonly ITaskItemRepository repository;
     private readonly IUserPlanService userPlanService;
+    private readonly ICompositePolicy compositePolicy;
     private readonly IRequestContext requestContext;
     private readonly Guid? userIdReq;
 
     public TaskItemService(ITaskItemRepository repository,
      IUserPlanService userPlanService,
      IRequestContext requestContext,
-     IServiceProvider serviceProvider) : base(serviceProvider)
+     IServiceProvider serviceProvider, ICompositePolicy compositePolicy) : base(serviceProvider)
     {
         this.repository = repository;
         this.userPlanService = userPlanService;
-        userIdReq = requestContext.GetUserId();
+        this.requestContext = requestContext;
+        this.compositePolicy = compositePolicy;
     }
     public async Task<TaskItemResponse> AddAsync(TaskItemRequest request)
     {
         await ValidateAsync(request);
-        var userPlan = await userPlanService.GetActiveUserPlanByUserId(userIdReq!.Value);
-        if (userPlan is null || userPlan.Plan is null) throw new BusinessRuleException("You don't have plan");
-        var numberOfTasks = await repository.GetTaskCount(userIdReq!.Value);
-        if (userPlan.Plan.MaxTasks <= numberOfTasks) throw new BusinessRuleException("You have reached the maximum number of tasks for your plan.");
+        var userId = requestContext.GetUserId()!.Value;
+        var userPlan = await userPlanService.GetActiveUserPlanByUserId(userId);
+        await compositePolicy.ValidateAll(userId, userPlan);
         var newTask = request.MapToTaskItem();
         var record = await repository.AddAsync(newTask);
         return record.MapToTaskItemResponse();
