@@ -203,13 +203,13 @@ public class PlanServiceTests
         };
 
         planRepositoryMock.Setup(r => r.GetByIdAsync(planId)).ReturnsAsync(existingPlan);
-        planRepositoryMock.Setup(r => r.DeActivePlan(existingPlan)).Returns(Task.CompletedTask);
+        planRepositoryMock.Setup(r => r.UpdateAsync(existingPlan)).Returns(Task.CompletedTask);
 
         // Act
         await planService.DeActiveAsync(planId);
 
         // Assert
-        planRepositoryMock.Verify(repo => repo.DeActivePlan(existingPlan), Times.Once);
+        planRepositoryMock.Verify(repo => repo.UpdateAsync(existingPlan), Times.Once);
     }
     [Fact]
     public async Task DeActiveAsync_ShouldThrowNotFoundException_WhenPlanDoesNotExist()
@@ -239,13 +239,13 @@ public class PlanServiceTests
         };
 
         planRepositoryMock.Setup(r => r.GetByIdAsync(planId)).ReturnsAsync(existingPlan);
-        planRepositoryMock.Setup(r => r.DeActivePlan(existingPlan)).Returns(Task.CompletedTask);
+        planRepositoryMock.Setup(r => r.UpdateAsync(existingPlan)).Returns(Task.CompletedTask);
 
         // Act
         await planService.DeActiveAsync(planId);
 
         // Assert
-        planRepositoryMock.Verify(repo => repo.DeActivePlan(existingPlan), Times.Once);
+        planRepositoryMock.Verify(repo => repo.UpdateAsync(existingPlan), Times.Once);
     }
     [Fact]
     public async Task ActivateAsync_ShouldThrowNotFoundException_WhenPlanDoesNotExist()
