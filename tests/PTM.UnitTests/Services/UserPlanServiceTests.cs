@@ -5,8 +5,10 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using PTM.Application.Exceptions;
 using PTM.Application.Interfaces;
+using PTM.Application.Interfaces.Policies;
 using PTM.Application.Interfaces.Repositories;
 using PTM.Application.Interfaces.Services;
+using PTM.Application.Policies;
 using PTM.Application.Services;
 using PTM.Contracts.Response.UserPlan;
 using PTM.Domain.Models;
@@ -18,20 +20,24 @@ public class UserPlanServiceTests
 {
     private readonly Mock<IPlanRepository> planRepoMock = new();
     private readonly Mock<IUserRepository> userRepoMock = new();
+    private readonly Mock<IServiceProvider> serviceProviderMock = new();
     private readonly Mock<IBaseRepository<UserPlan>> userPlanRepoMock = new();
     private readonly Mock<IRequestContext> requestContextMock = new();
     private readonly UserPlanService userPlanService;
     private readonly Guid userId = Guid.NewGuid();
     private readonly Mock<ILogger<UserPlanService>> loggerMock = new();
+    private readonly Mock<IUserPlanPolicy<Guid>> userPlanPolicy = new();
+    private readonly Mock<IUserPlanPolicy<UserPlan>> expirationPolicy = new();
     public UserPlanServiceTests()
     {
-        requestContextMock.Setup(r => r.GetUserId()).Returns(userId);
         userPlanService = new UserPlanService(
-            Mock.Of<IServiceProvider>(),
+            serviceProviderMock.Object,
             planRepoMock.Object,
             userRepoMock.Object,
             requestContextMock.Object,
             loggerMock.Object,
+            userPlanPolicy.Object,
+            expirationPolicy.Object,
             userPlanRepoMock.Object
         );
     }
@@ -40,6 +46,8 @@ public class UserPlanServiceTests
     public async Task Purchase_ShouldAddNewUserPlan_WhenValid()
     {
         // Arrange
+        var userId = Guid.NewGuid();
+        requestContextMock.Setup(repo => repo.GetUserId()).Returns(userId);
         var plan = new Plan
         {
             Id = Guid.NewGuid(),
@@ -85,6 +93,8 @@ public class UserPlanServiceTests
     [Fact]
     public async Task Purchase_ShouldThrowBusinessRuleException_WhenUserAlreadyHasActivePlan()
     {
+        var userId = Guid.NewGuid();
+        requestContextMock.Setup(repo => repo.GetUserId()).Returns(userId);
         var planId = Guid.NewGuid();
         var user = new User
         {
@@ -105,7 +115,7 @@ public class UserPlanServiceTests
         };
 
         userRepoMock.Setup(r => r.GetByIdAsync(userId, It.IsAny<Expression<Func<User, object>>[]>())).ReturnsAsync(user);
-
+        userPlanPolicy.Setup(up => up.Validate(userId)).ThrowsAsync(new BusinessRuleException("You already have a active plan, please deactive it and then purchase new one."));
         var exception = await Assert.ThrowsAsync<BusinessRuleException>(() => userPlanService.Purchase(planId));
 
         Assert.Contains("You already have a active plan", exception.Message, StringComparison.OrdinalIgnoreCase);
@@ -113,6 +123,8 @@ public class UserPlanServiceTests
     [Fact]
     public async Task Purchase_ShouldThrowNotFoundException_WhenPlanNotFound()
     {
+        var userId = Guid.NewGuid();
+        requestContextMock.Setup(repo => repo.GetUserId()).Returns(userId);
         var planId = Guid.NewGuid();
         var user = new User
         {
@@ -133,10 +145,10 @@ public class UserPlanServiceTests
     [Fact]
     public async Task Purchase_ShouldThrowNotFoundException_WhenUserNotFound()
     {
+        var userId = Guid.NewGuid();
+        requestContextMock.Setup(repo => repo.GetUserId()).Returns(userId);
         var planId = Guid.NewGuid();
-
-        userRepoMock.Setup(r => r.GetByIdAsync(userId, It.IsAny<Expression<Func<User, object>>[]>())).ReturnsAsync((User?)null);
-
+        userPlanPolicy.Setup(up => up.Validate(userId)).ThrowsAsync(new NotFoundException("User"));
         var exception = await Assert.ThrowsAsync<NotFoundException>(() => userPlanService.Purchase(planId));
 
         Assert.Contains("User not found.", exception.Message, StringComparison.OrdinalIgnoreCase);
@@ -379,14 +391,14 @@ public class UserPlanServiceTests
         };
 
         userPlanRepoMock.Setup(r => r.GetByIdAsync(userPlanId)).ReturnsAsync(plan);
-
+        expirationPolicy.Setup(xp => xp.Validate(It.IsAny<UserPlan>())).Returns(Task.CompletedTask);
         userPlanRepoMock.Setup(r => r.UpdateAsync(It.IsAny<UserPlan>())).Returns(Task.CompletedTask);
 
         var result = await userPlanService.DeactivateAsync(userPlanId);
 
 
         result.Should().NotBeNull();
-        result.IsActive.Should().BeFalse();
+        result.Massage.Should().Contain("deactivated");
         userPlanRepoMock.Verify(r => r.UpdateAsync(It.Is<UserPlan>(up => up.Id == userPlanId && up.IsActive == false)), Times.Once);
     }
     [Fact]
@@ -404,6 +416,8 @@ public class UserPlanServiceTests
     [Fact]
     public async Task DeactivateAsync_ShouldThrowBusinessRuleException_WhenPlanAlreadyDeactivated()
     {
+         var userId = Guid.NewGuid();
+        requestContextMock.Setup(repo => repo.GetUserId()).Returns(userId);
         var userPlanId = Guid.NewGuid();
         var expiredDate = DateTime.UtcNow.AddDays(-1);
         var plan = new UserPlan
@@ -415,10 +429,10 @@ public class UserPlanServiceTests
         };
 
         userPlanRepoMock.Setup(r => r.GetByIdAsync(userPlanId)).ReturnsAsync(plan);
-
+        expirationPolicy.Setup(xp => xp.Validate(It.IsAny<UserPlan>())).ThrowsAsync(new BusinessRuleException("The Plan has expired."));
         var exception = await Assert.ThrowsAsync<BusinessRuleException>(() => userPlanService.DeactivateAsync(userPlanId));
 
-        Assert.Contains("Your plan is already deactivated", exception.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("The Plan has expired.", exception.Message, StringComparison.OrdinalIgnoreCase);
     }
 
 }
