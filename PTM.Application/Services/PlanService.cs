@@ -4,11 +4,13 @@ using PTM.Application.Interfaces.Repositories;
 using PTM.Application.Mappers;
 using PTM.Contracts.Requests;
 using PTM.Contracts.Response;
+using PTM.Domain.Models;
+using PTM.Infrastructure.Repository;
 namespace PTM.Application.Services;
 
 public class PlanService : BaseService, IPlanService
 {
-    private readonly IPlanRepository repository;
+    private readonly IBaseRepository<Plan> repository;
 
     public PlanService(IPlanRepository repository,
      IServiceProvider serviceProvider) : base(serviceProvider)
@@ -49,14 +51,15 @@ public class PlanService : BaseService, IPlanService
     {
         var record = await repository.GetByIdAsync(id);
         if (record is null) throw new NotFoundException("plan");
-        await repository.DeActivePlan(record);
-
+        record.IsActive = false;
+        await repository.UpdateAsync(record);
     }
 
     public async Task ActivateAsync(Guid id)
     {
         var record = await repository.GetByIdAsync(id);
         if (record is null) throw new NotFoundException("plan");
-        await repository.ActivatePlan(record);
+        record.IsActive = true;
+        await repository.UpdateAsync(record);
     }
 }
