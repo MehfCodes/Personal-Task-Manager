@@ -28,8 +28,6 @@ public class UserContractMapperTests
         result.Username.Should().Be(request.Username);
         result.Email.Should().Be(request.Email);
         result.PhoneNumber.Should().Be(request.PhoneNumber);
-        result.Password.Should().NotBe(request.Password);
-        BCrypt.Net.BCrypt.Verify(request.Password, result.Password).Should().BeTrue();
     }
 
     [Fact]

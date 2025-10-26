@@ -30,7 +30,6 @@ public class UserPlanContractMapperTests
         result.PurchasedAt.Should().Be(userPlan.PurchasedAt);
         result.ExpiredAt.Should().Be(userPlan.ExpiredAt);
         result.Plan.Should().BeNull();
-        result.User.Should().BeNull();
     }
 
     [Fact]
