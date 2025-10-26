@@ -2,6 +2,7 @@ using System;
 using FluentAssertions;
 using Moq;
 using PTM.Application.Exceptions;
+using PTM.Application.Interfaces.Policies;
 using PTM.Application.Interfaces.Repositories;
 using PTM.Application.Interfaces.Services;
 using PTM.Application.Services;
@@ -19,9 +20,9 @@ public class TaskItemServiceTests
     private readonly Mock<IUserPlanService> userPlanServiceMock;
     private readonly Mock<IRequestContext> requestContextMock;
     private readonly Mock<IServiceProvider> serviceProviderMock;
+    private readonly Mock<ICompositePolicy> compositePolicyMock;
 
     private readonly TaskItemService taskItemService;
-    private readonly Guid userId;
 
 
     public TaskItemServiceTests()
@@ -30,29 +31,30 @@ public class TaskItemServiceTests
         userPlanServiceMock = new Mock<IUserPlanService>();
         requestContextMock = new Mock<IRequestContext>();
         serviceProviderMock = new Mock<IServiceProvider>();
-
-        requestContextMock.Setup(rc => rc.GetUserId()).Returns(userId);
+        compositePolicyMock = new Mock<ICompositePolicy>();
 
         taskItemService = new TaskItemService(
             taskItemRepoMock.Object,
             userPlanServiceMock.Object,
             requestContextMock.Object,
-            serviceProviderMock.Object
+            serviceProviderMock.Object,
+            compositePolicyMock.Object
         );
     }
 
     [Fact]
     public async Task AddAsync_ShouldAddTask_WhenValid()
     {
-
+        var userId = Guid.NewGuid();
+        requestContextMock.Setup(repo => repo.GetUserId()).Returns(userId);
         var request = new TaskItemRequest { Title = "Test Task" };
         var userPlan = new UserPlanResponse
         {
             UserId = userId,
             Plan = new PlanResponse { MaxTasks = 5 }
         };
-
-        userPlanServiceMock.Setup(s => s.GetActiveUserPlanByUserId(userId)).ReturnsAsync(userPlan);
+        userPlanServiceMock.Setup(s => s.GetActiveUserPlanByUserId(userId)).ReturnsAsync(It.IsAny<UserPlanResponseDetail>());
+        compositePolicyMock.Setup(cp => cp.ValidateAll(userId, It.IsAny<UserPlanResponseDetail>())).Returns(Task.CompletedTask);
         taskItemRepoMock.Setup(r => r.GetTaskCount(userId)).ReturnsAsync(2);
 
         var addedTask = new TaskItem { Id = Guid.NewGuid(), Title = request.Title };
@@ -70,8 +72,13 @@ public class TaskItemServiceTests
     [Fact]
     public async Task AddAsync_ShouldThrowBusinessRuleException_WhenNoActivePlan()
     {
+        var userId = Guid.NewGuid();
+        requestContextMock.Setup(repo => repo.GetUserId()).Returns(userId);
         var request = new TaskItemRequest { Title = "Test Task" };
-        userPlanServiceMock.Setup(s => s.GetActiveUserPlanByUserId(userId)).ReturnsAsync((UserPlanResponse?)null);
+        compositePolicyMock
+        .Setup(p => p.ValidateAll(userId, It.IsAny<UserPlanResponseDetail>()))
+        .ThrowsAsync(new BusinessRuleException("You don't have plan"));
+        userPlanServiceMock.Setup(s => s.GetActiveUserPlanByUserId(userId)).ReturnsAsync((UserPlanResponseDetail)null!);
 
         var ex = await Assert.ThrowsAsync<BusinessRuleException>(() => taskItemService.AddAsync(request));
         ex.Message.Should().Contain("You don't have plan");
@@ -79,13 +86,18 @@ public class TaskItemServiceTests
     [Fact]
     public async Task AddAsync_ShouldThrowBusinessRuleException_WhenMaxTasksReached()
     {
+        var userId = Guid.NewGuid();
+        requestContextMock.Setup(repo => repo.GetUserId()).Returns(userId);
         var request = new TaskItemRequest { Title = "Test Task" };
         var userPlan = new UserPlanResponse
         {
             UserId = userId,
             Plan = new PlanResponse { MaxTasks = 5 }
         };
-        userPlanServiceMock.Setup(s => s.GetActiveUserPlanByUserId(userId)).ReturnsAsync(userPlan);
+        compositePolicyMock
+        .Setup(p => p.ValidateAll(userId, It.IsAny<UserPlanResponseDetail>()))
+        .ThrowsAsync(new BusinessRuleException("You have reached the maximum number of tasks for your plan."));
+        userPlanServiceMock.Setup(s => s.GetActiveUserPlanByUserId(userId)).ReturnsAsync(It.IsAny<UserPlanResponseDetail>());
         taskItemRepoMock.Setup(r => r.GetTaskCount(userId)).ReturnsAsync(5);
 
 
