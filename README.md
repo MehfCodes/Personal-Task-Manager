@@ -1,13 +1,33 @@
-![Build](https://img.shields.io/badge/build-passing-brightgreen?style=for-the-badge)
+<p align="center">
+  <img src="https://github.com/MehfCodes/Personal-Task-Manager/assets/your_logo.png" alt="Personal Task Manager" width="100"/>
+</p>
 
-![License](https://img.shields.io/github/license/MehfCodes/Personal-Task-Manager?style=for-the-badge)
-![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
+<h1 align="center">🧩 Personal Task Manager</h1>
 
-# Project Title
+<p align="center">
+  A clean and modular ASP.NET Core Web API built with <b>Clean Architecture</b>, <b>SOLID Principles</b>, <b>JWT Authentication</b>, and <b>EF Core</b>.
+</p>
 
-## 📝Personal Task Manager
+<p align="center">
+  <!-- Badges -->
+  <img src="https://img.shields.io/github/actions/workflow/status/MehfCodes/Personal-Task-Manager/dotnet.yml?style=flat-square&logo=github&label=Build" alt="Build"/>
+  <img src="https://img.shields.io/github/license/MehfCodes/Personal-Task-Manager?style=flat-square&color=blue" alt="License"/>
+  <img src="https://img.shields.io/badge/.NET-9.0-512BD4?style=flat-square&logo=dotnet&logoColor=white" alt=".NET 9"/>
+  <img src="https://img.shields.io/badge/Entity_Framework_Core-9.0-512BD4?style=flat-square&logo=efcore&logoColor=white" alt="EF Core 9"/>
+  <img src="https://img.shields.io/badge/Swagger-UI-85EA2D?style=flat-square&logo=swagger&logoColor=black" alt="Swagger UI"/>
+  <img src="https://img.shields.io/badge/SQL%20Server-CC2927?style=flat-square&logo=microsoftsqlserver&logoColor=white" alt="SQL Server"/>
+  <img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker"/>
+</p>
 
-A clean and maintainable ASP.NET Core Web API project following SOLID principles and Clean Architecture.
+
+
+
+
+<!-- # Project Title -->
+
+<!-- ## 📝Personal Task Manager
+
+A clean and maintainable ASP.NET Core Web API project following SOLID principles and Clean Architecture. -->
 
 ---
 
@@ -118,7 +138,7 @@ Content-Type: application/json
 {
   "email": "user@example.com",
   "username": "username",
-  "phoneNumber" : 09876543212,
+  "phoneNumber" : "phonenumber",
   "password": "YourStrongPassword123"
 }
 ```
