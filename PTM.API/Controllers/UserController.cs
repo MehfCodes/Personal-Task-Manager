@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PTM.Application.Interfaces.Services;
 using PTM.Contracts.Requests;

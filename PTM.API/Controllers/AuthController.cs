@@ -1,6 +1,4 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PTM.Application.Interfaces.Services;
 using PTM.Contracts.Requests;
@@ -16,10 +14,12 @@ namespace PTM.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService authService;
+        private readonly IUserPasswordService userPasswordService;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, IUserPasswordService userPasswordService)
         {
             this.authService = authService;
+            this.userPasswordService = userPasswordService;
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace PTM.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<string>), StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> UpdatePassword([FromBody] UpdatePasswordRequest request)
         {
-            var res = await authService.UpdatePassword(request);
+            var res = await userPasswordService.UpdatePassword(request);
             return Ok(ApiResponse<UpdatePasswordResponse>.SuccessResponse(res, "Password update successfully", HttpContext.TraceIdentifier));
         }
 
@@ -113,7 +113,7 @@ namespace PTM.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<string>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
         {
-            var res = await authService.ForgotPassword(request);
+            var res = await userPasswordService.ForgotPassword(request);
             return Ok(ApiResponse<ForgotPasswordResponse>.SuccessResponse(res, "Check your email inbox", HttpContext.TraceIdentifier));
         }
 
@@ -129,7 +129,7 @@ namespace PTM.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<string>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
         {
-            var res = await authService.ResetPassword(request);
+            var res = await userPasswordService.ResetPassword(request);
             return Ok(ApiResponse<ResetPasswordResponse>.SuccessResponse(res, "Password reset successfully", HttpContext.TraceIdentifier));
         }
     }
