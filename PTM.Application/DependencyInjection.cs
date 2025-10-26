@@ -4,8 +4,10 @@ using PTM.Application.Interfaces.Policies;
 using PTM.Application.Interfaces.Services;
 using PTM.Application.Mappers;
 using PTM.Application.Policies;
+using PTM.Application.Policies.UserPlans;
 using PTM.Application.Services;
 using PTM.Application.Validation;
+using PTM.Domain.Models;
 
 namespace PTM.Application;
 
@@ -24,6 +26,9 @@ public static class DependencyInjection
         services.AddScoped<ITaskItemPolicy, ActivePlanPolicy>();
         services.AddScoped<ITaskItemPolicy, MaxTasksPolicy>();
         services.AddScoped<ICompositePolicy, CompositePolicy>();
+        services.AddScoped<IUserPlanPolicy<Guid>, ActiveUserPlanPolicy>();
+        services.AddScoped<IUserPlanPolicy<UserPlan>, ExpirationPolicy>();
+
         services.AddValidatorsFromAssemblyContaining<ValidationAssemblyMarker>();
         return services;
     }
