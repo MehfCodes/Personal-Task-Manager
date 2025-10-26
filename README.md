@@ -1,8 +1,4 @@
-<p align="center">
-  <img src="https://github.com/MehfCodes/Personal-Task-Manager/assets/your_logo.png" alt="Personal Task Manager" width="100"/>
-</p>
-
-<h1 align="center">🧩 Personal Task Manager</h1>
+<h1 align="center">📝Personal Task Manager</h1>
 
 <p align="center">
   A clean and modular ASP.NET Core Web API built with <b>Clean Architecture</b>, <b>SOLID Principles</b>, <b>JWT Authentication</b>, and <b>EF Core</b>.
