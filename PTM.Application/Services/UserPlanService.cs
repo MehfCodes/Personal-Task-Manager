@@ -2,6 +2,7 @@ using System;
 using Microsoft.Extensions.Logging;
 using PTM.Application.Exceptions;
 using PTM.Application.Interfaces;
+using PTM.Application.Interfaces.Policies;
 using PTM.Application.Interfaces.Repositories;
 using PTM.Application.Interfaces.Services;
 using PTM.Application.Mappers;
@@ -19,12 +20,16 @@ public class UserPlanService : BaseService, IUserPlanService
     private readonly IBaseRepository<UserPlan> userPlanRepository;
     private readonly IRequestContext requestContext;
     private readonly ILogger<UserPlanService> logger;
-    private Guid? userIdReq;
+    private readonly IUserPlanPolicy<Guid> userPlanPolicy;
+    private readonly IUserPlanPolicy<UserPlan> expirationPolicy;
+
     public UserPlanService(IServiceProvider serviceProvider,
      IPlanRepository planRepository,
      IUserRepository userRepository,
      IRequestContext requestContext,
      ILogger<UserPlanService> logger,
+     IUserPlanPolicy<Guid> userPlanPolicy,
+     IUserPlanPolicy<UserPlan> expirationPolicy,
      IBaseRepository<UserPlan> userPlanRepository) : base(serviceProvider)
     {
         this.planRepository = planRepository;
@@ -32,19 +37,19 @@ public class UserPlanService : BaseService, IUserPlanService
         this.userPlanRepository = userPlanRepository;
         this.requestContext = requestContext;
         this.logger = logger;
-        userIdReq = requestContext.GetUserId();
+        this.userPlanPolicy = userPlanPolicy;
+        this.expirationPolicy = expirationPolicy;
     }
 
     public async Task<UserPlanResponseDetail> Purchase(Guid planId)
     {
-        //deactive previous plans
-        var activePlan = await HasActivePlan(userIdReq!.Value);
-        if (activePlan) throw new BusinessRuleException("You already have a active plan, please deactive it and then purchase new one.");
+        var userId = requestContext.GetUserId()!.Value;
+        await userPlanPolicy.Validate(userId);
         var plan = await planRepository.GetByIdAsync(planId);
         if (plan is null) throw new NotFoundException("Plan");
         var purchasedPlan = new UserPlan
         {
-            UserId = userIdReq!.Value,
+            UserId = userId,
             PlanId = planId,
             IsActive = true,
             PurchasedAt = DateTime.UtcNow,
@@ -71,14 +76,6 @@ public class UserPlanService : BaseService, IUserPlanService
         if (activeUserPlan is null) throw new NotFoundException("User plan");
         return activeUserPlan.MapToUserPlanWithPlanDetailResponse();
     }
-    public async Task<bool> HasActivePlan(Guid userId)
-    {
-        var user = await userRepository.GetByIdAsync(userId, u => u.UserPlans);
-        if (user is null) throw new NotFoundException("User");
-        var activeUserPlan = user.UserPlans.Where(up => up.IsActive == true && up.ExpiredAt > DateTime.UtcNow).FirstOrDefault();
-        if (activeUserPlan is null) return false;
-        return true;
-    }
 
     public async Task<IEnumerable<UserPlanResponseDetail>> GetAllUserPlansByUserId(Guid userId)
     {
@@ -99,7 +96,7 @@ public class UserPlanService : BaseService, IUserPlanService
     {
         var up = await userPlanRepository.GetByIdAsync(userPlanId);
         if (up is null) throw new NotFoundException("Prchased plan");
-        if (!up.IsActive || up.ExpiredAt < DateTime.UtcNow) throw new BusinessRuleException("Your plan is already deactivated.");
+        await expirationPolicy.Validate(up);
         up.IsActive = false;
         await userPlanRepository.UpdateAsync(up);
         logger.LogInformation("User {UserId} deactive the Plan {PlanId} at {Time}", up.UserId, up.PlanId, DateTime.UtcNow);
