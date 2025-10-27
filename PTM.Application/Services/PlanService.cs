@@ -12,7 +12,7 @@ public class PlanService : BaseService, IPlanService
 {
     private readonly IBaseRepository<Plan> repository;
 
-    public PlanService(IPlanRepository repository,
+    public PlanService(IBaseRepository<Plan> repository,
      IServiceProvider serviceProvider) : base(serviceProvider)
     {
         this.repository = repository;

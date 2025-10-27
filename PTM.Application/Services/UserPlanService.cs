@@ -15,7 +15,7 @@ namespace PTM.Application.Services;
 
 public class UserPlanService : BaseService, IUserPlanService
 {
-    private readonly IPlanRepository planRepository;
+    private readonly IBaseRepository<Plan> planRepository;
     private readonly IUserRepository userRepository;
     private readonly IBaseRepository<UserPlan> userPlanRepository;
     private readonly IRequestContext requestContext;
@@ -24,7 +24,7 @@ public class UserPlanService : BaseService, IUserPlanService
     private readonly IUserPlanPolicy<UserPlan> expirationPolicy;
 
     public UserPlanService(IServiceProvider serviceProvider,
-     IPlanRepository planRepository,
+     IBaseRepository<Plan> planRepository,
      IUserRepository userRepository,
      IRequestContext requestContext,
      ILogger<UserPlanService> logger,

@@ -7,17 +7,18 @@ using PTM.Application.Interfaces.Repositories;
 using PTM.Application.Services;
 using PTM.Contracts.Requests;
 using PTM.Domain.Models;
+using PTM.Infrastructure.Repository;
 
 namespace PTM.UnitTests.Services;
 
 public class PlanServiceTests
 {
-    private readonly Mock<IPlanRepository> planRepositoryMock;
+    private readonly Mock<IBaseRepository<Plan>> planRepositoryMock;
     private readonly Mock<IServiceProvider> serviceProviderMock;
     private readonly PlanService planService;
     public PlanServiceTests()
     {
-        planRepositoryMock = new Mock<IPlanRepository>();
+        planRepositoryMock = new Mock<IBaseRepository<Plan>>();
         serviceProviderMock = new Mock<IServiceProvider>();
         planService = new PlanService(planRepositoryMock.Object, serviceProviderMock.Object);
     }
@@ -220,7 +221,7 @@ public class PlanServiceTests
         // Act & Assert
         var exception = await Assert.ThrowsAsync<NotFoundException>(() => planService.DeActiveAsync(planId));
         Assert.Contains("not found", exception.Message, StringComparison.OrdinalIgnoreCase);
-        planRepositoryMock.Verify(repo => repo.DeActivePlan(It.IsAny<Plan>()), Times.Never);
+        planRepositoryMock.Verify(repo => repo.UpdateAsync(It.IsAny<Plan>()), Times.Never);
     }
     [Fact]
     public async Task ActivateAsync_ShouldCallRepository_WhenPlanExists()
@@ -256,6 +257,6 @@ public class PlanServiceTests
         // Act & Assert
         var exception = await Assert.ThrowsAsync<NotFoundException>(() => planService.ActivateAsync(planId));
         Assert.Contains("not found", exception.Message, StringComparison.OrdinalIgnoreCase);
-        planRepositoryMock.Verify(repo => repo.ActivatePlan(It.IsAny<Plan>()), Times.Never);
+        planRepositoryMock.Verify(repo => repo.UpdateAsync(It.IsAny<Plan>()), Times.Never);
     }
 }

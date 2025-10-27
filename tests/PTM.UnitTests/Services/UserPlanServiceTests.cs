@@ -18,7 +18,7 @@ namespace PTM.UnitTests.Services;
 
 public class UserPlanServiceTests
 {
-    private readonly Mock<IPlanRepository> planRepoMock = new();
+    private readonly Mock<IBaseRepository<Plan>> planRepoMock = new();
     private readonly Mock<IUserRepository> userRepoMock = new();
     private readonly Mock<IServiceProvider> serviceProviderMock = new();
     private readonly Mock<IBaseRepository<UserPlan>> userPlanRepoMock = new();
