@@ -1,9 +1,11 @@
-﻿using System.Text;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using PTM.Application.Exceptions;
 using PTM.Application.Interfaces;
 using PTM.Application.Interfaces.Authentication;
 using PTM.Application.Interfaces.Providers;
@@ -65,6 +67,47 @@ public static class DependencyInjection
                 ValidAudience = config["Jwt:Audience"],
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:SecretKey"]!)),
                 ClockSkew = TimeSpan.Zero
+            };
+
+            options.Events = new JwtBearerEvents
+            {
+                OnAuthenticationFailed = async context =>
+                {
+                    if (context.Exception is SecurityTokenExpiredException)
+                    {
+                        throw new UnauthorizedException("Your session has expired. Please login again.");
+                    }
+                    else if (context.Exception is SecurityTokenValidationException)
+                    {
+                        throw new UnauthorizedException("Invalid authentication information.");
+                    }
+                    return;
+                },
+                OnTokenValidated = async context =>
+                {
+                    var claims = context.Principal?.Claims;
+                    var userIdClaim = claims?.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
+                    var jti = claims?.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti)?.Value;
+                    if (string.IsNullOrEmpty(userIdClaim))
+                    {
+                        throw new UnauthorizedException("Invalid Token Claims!");
+                    }
+                    var userRepository = context.HttpContext.RequestServices.GetRequiredService<IUserRepository>();
+                    var refreshTokenRepository = context.HttpContext.RequestServices.GetRequiredService<IRefreshTokenRepository>();
+                    var requestContext = context.HttpContext.RequestServices.GetRequiredService<IRequestContext>();
+                    var ipAddress = requestContext.GetIpAddress() ?? "";
+                    var userAgent = requestContext.GetUserAgent() ?? "";
+                    var user = await userRepository.GetByIdAsync(Guid.Parse(userIdClaim));
+                    if (user == null)
+                    {
+                        throw new UnauthorizedException("User not found");
+                    }
+                    var rt = await refreshTokenRepository.GetRefreshTokenByUserId(Guid.Parse(userIdClaim), ipAddress, userAgent);
+                    if (rt is null || rt.Jti.ToString() != jti)
+                    {
+                        throw new UnauthorizedException("Session is no longer valid.");
+                    }
+                }
             };
         });
 

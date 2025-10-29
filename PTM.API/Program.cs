@@ -1,5 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using PTM.API;
 using PTM.API.Middlewares;
 using PTM.Application;
@@ -12,7 +14,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
-builder.Services.AddControllers().AddJsonOptions(options =>
+builder.Services.AddControllers(config =>
+{
+    var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+    config.Filters.Add(new AuthorizeFilter(policy));
+}).AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.Converters
     .Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: false));
@@ -46,8 +52,7 @@ if (app.Environment.IsDevelopment())
 }
 // Custom middlewares
 app.UseMiddleware<ExceptionHandlingMiddleware>();
-app.UseMiddleware<ProtectedRoute>();
-
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
