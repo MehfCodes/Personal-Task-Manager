@@ -128,7 +128,7 @@ public class UserPasswordServiceTests
         requestContextMock.Setup(rc => rc.GetUserId()).Returns(userId);
         userRepoMock.Setup(r => r.GetByIdAsync(userId)).ReturnsAsync(user);
         passwordHasherMock.Setup(ph => ph.VerifyPassword(It.IsAny<string>(), It.IsAny<string>())).Returns(false);
-        var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => userPasswordServiceMock.UpdatePassword(req));
+        var exception = await Assert.ThrowsAsync<UnauthorizedException>(() => userPasswordServiceMock.UpdatePassword(req));
 
         exception.Message.Should().Contain("The current password you entered is incorrect.");
         userRepoMock.Verify(r => r.UpdateAsync(It.IsAny<User>()), Times.Never);

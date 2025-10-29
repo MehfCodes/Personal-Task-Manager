@@ -174,7 +174,8 @@ public class AuthServiceTests
     [Fact]
     public async Task RefreshToken_ShouldReturnNotFoundException_WhenRawTokenIsInValid()
     {
-
+        var userId = Guid.NewGuid();
+        requestContextMock.Setup(repo => repo.GetUserId()).Returns(userId);
         var req = new RefreshTokenRequest { RefreshToken = "wrong-token" };
 
         refreshTokenServiceMock.Setup(rts => rts.GenerateAndRevokeRefreshTokenAsync(req.RefreshToken)).ReturnsAsync((RevokeResult)null!);
@@ -186,7 +187,7 @@ public class AuthServiceTests
     [Fact]
     public async Task Logout_ShouldBeSuccessfull()
     {
-                var userId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
         requestContextMock.Setup(repo => repo.GetUserId()).Returns(userId);
         refreshTokenServiceMock.Setup(r => r.RevokePreviousToken(userId, false)).Returns(Task.CompletedTask);
 
