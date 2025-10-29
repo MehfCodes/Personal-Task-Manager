@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PTM.Application.Mappers;
 using PTM.Contracts.Requests;
@@ -7,6 +8,7 @@ using PTM.Contracts.Response.TaskItem;
 namespace PTM.API.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = "AdminOrUser")]
     [ApiController]
     public class TaskItemController : ControllerBase
     {

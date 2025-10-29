@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PTM.Application.Interfaces.Services;
 using PTM.Contracts.Requests.UserPlan;
@@ -7,6 +8,7 @@ using PTM.Contracts.Response.UserPlan;
 namespace PTM.API.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = "AdminOrUser")]
     [ApiController]
     public class UserPlanController : ControllerBase
     {

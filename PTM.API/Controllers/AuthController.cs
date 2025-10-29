@@ -91,6 +91,7 @@ namespace PTM.API.Controllers
         /// Logout the current user and revoke refresh token.
         /// </summary>
         /// <returns>Logout status.</returns>
+        [Authorize(Roles = "AdminOrUser")]
         [HttpPost("logout")]
         [SwaggerOperation(Summary = "Logout user", Description = "Logs out the current user and revokes refresh token.")]
         [ProducesResponseType(typeof(ApiResponse<LogoutResponse>), StatusCodes.Status200OK)]
