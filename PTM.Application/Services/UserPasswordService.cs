@@ -86,7 +86,7 @@ public class UserPasswordService : BaseService, IUserPasswordService
         if (!userIdReq.HasValue) throw new UnauthorizedException();
         var user = await userRepository.GetByIdAsync(userIdReq.Value);
         if (user is null) throw new NotFoundException("User");
-        if (!passwordHasher.VerifyPassword(request.CurrentPassword!, user.Password)) throw new UnauthorizedAccessException("The current password you entered is incorrect.");
+        if (!passwordHasher.VerifyPassword(request.CurrentPassword!, user.Password)) throw new UnauthorizedException("The current password you entered is incorrect.");
         user.Password = passwordHasher.HashPassword(request.NewPassword!);
         user.PasswordChangedAt = DateTime.UtcNow;
         await userRepository.UpdateAsync(user);
