@@ -19,7 +19,6 @@ public class TaskItemService : BaseService, ITaskItemService
     private readonly IUserPlanService userPlanService;
     private readonly ICompositePolicy compositePolicy;
     private readonly IRequestContext requestContext;
-    private readonly Guid? userIdReq;
 
     public TaskItemService(ITaskItemRepository repository,
      IUserPlanService userPlanService,
