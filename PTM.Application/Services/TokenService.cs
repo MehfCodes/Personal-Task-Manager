@@ -35,7 +35,7 @@ public class TokenService : ITokenService
             ExpiresAt = expiresAt,
             CreatedAt = DateTime.UtcNow,
             CreatedByIp = requestContext.GetIpAddress(),
-            UserAgent = requestContext.GetIpAddress(),
+            UserAgent = requestContext.GetUserAgent(),
             Jti = Guid.NewGuid()
         };
         await refreshTokenRepository.AddAsync(refreshToken);
