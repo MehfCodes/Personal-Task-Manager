@@ -16,4 +16,5 @@ public class UserRepository : BaseRepository<User>, IUserRepository
     }
 
     public async Task<User?> GetUserByEmail(string email) => await context.Users.FirstOrDefaultAsync(u => u.Email == email);
+    public async Task<User?> GetUserbyIdWithPlans(Guid id) => await context.Users.Include(u => u.UserPlans).ThenInclude(up => up.Plan).FirstOrDefaultAsync(u => u.Id == id);
 }

@@ -7,6 +7,8 @@ using PTM.Application.Mappers;
 using PTM.Contracts.Requests;
 using PTM.Contracts.Response;
 using PTM.Contracts.Response.User;
+using PTM.Domain.Models;
+using PTM.Infrastructure.Repository;
 
 namespace PTM.Application.Services;
 
@@ -17,6 +19,7 @@ public class AuthService : BaseService, IAuthService
     private readonly IRefreshTokenService refreshTokenService;
     private readonly IRequestContext requestContext;
     private readonly IPasswordHasher passwordHasher;
+    private readonly IUserPlanService userPlanService;
     private readonly ILogger<AuthService> logger;
     public AuthService(IUserRepository repository,
     ITokenService tokenService,
@@ -24,6 +27,7 @@ public class AuthService : BaseService, IAuthService
     IRequestContext requestContext,
     IServiceProvider serviceProvider,
     IPasswordHasher passwordHasher,
+    IUserPlanService userPlanService,
     ILogger<AuthService> logger) : base(serviceProvider)
     {
         this.repository = repository;
@@ -31,6 +35,7 @@ public class AuthService : BaseService, IAuthService
         this.refreshTokenService = refreshTokenService;
         this.requestContext = requestContext;
         this.passwordHasher = passwordHasher;
+        this.userPlanService = userPlanService;
         this.logger = logger;
     }
 
@@ -40,6 +45,7 @@ public class AuthService : BaseService, IAuthService
         var newUser = request.MapToUser();
         newUser.Password = passwordHasher.HashPassword(request.Password);
         var record = await repository.AddAsync(newUser);
+        await userPlanService.AssignFreePLanToNewUser(newUser.Id);
         var res = record.MapToUserResponse();
         var tokens = await tokenService.GenerateTokenPair(newUser);
         res.AccessToken = tokens.AccessToken;

@@ -1,5 +1,6 @@
 using System;
 using PTM.Application.Exceptions;
+using PTM.Application.Interfaces;
 using PTM.Application.Interfaces.Services;
 using PTM.Application.Mappers;
 using PTM.Contracts.Requests;
@@ -11,9 +12,9 @@ namespace PTM.Application.Services;
 
 public class UserService : BaseService ,IUserService
 {
-    private readonly IBaseRepository<User> repository;
+    private readonly IUserRepository repository;
 
-    public UserService(IBaseRepository<User> repository, IServiceProvider serviceProvider) : base(serviceProvider)
+    public UserService(IUserRepository repository, IServiceProvider serviceProvider) : base(serviceProvider)
     {
         this.repository = repository;
     }
@@ -21,7 +22,7 @@ public class UserService : BaseService ,IUserService
 
     public async Task<UserResponse> GetByIdAsync(Guid id)
     {
-        var record = await repository.GetByIdAsync(id);
+        var record = await repository.GetUserbyIdWithPlans(id);
         if (record is null) throw new NotFoundException("User");
         return record.MapToUserResponse();
     }

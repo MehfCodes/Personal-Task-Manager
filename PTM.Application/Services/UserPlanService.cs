@@ -102,4 +102,21 @@ public class UserPlanService : BaseService, IUserPlanService
         logger.LogInformation("User {UserId} deactive the Plan {PlanId} at {Time}", up.UserId, up.PlanId, DateTime.UtcNow);
         return new MessageResponse { Massage = "Plan deactivated." };
     }
+    public async Task<UserPlan> AssignFreePLanToNewUser(Guid userId)
+    {
+        var plans = await planRepository.GetAllAsync();
+        var freePlan = plans.Where(p => p.Title.ToString() == "Free" && p.IsActive == true).Select(p => new { Id = p.Id, DurationDays = p.DurationDays }).FirstOrDefault();
+        if (freePlan is null) throw new NotFoundException("Free plan");
+        var freeUserPlan = new UserPlan
+        {
+            UserId = userId,
+            PlanId = freePlan.Id,
+            IsActive = true,
+            PurchasedAt = DateTime.UtcNow,
+            ExpiredAt = DateTime.UtcNow.AddDays(freePlan.DurationDays)
+
+        };
+        var userPlan = await userPlanRepository.AddAsync(freeUserPlan);
+        return userPlan;
+    }
 }

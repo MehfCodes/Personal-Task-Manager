@@ -1,3 +1,4 @@
+using System.Data.Common;
 using PTM.Contracts.Requests;
 using PTM.Contracts.Response;
 using PTM.Contracts.Response.UserPlan;
@@ -7,6 +8,7 @@ namespace PTM.Application.Mappers;
 
 public static class UserContractMapper
 {
+
     public static User MapToUser(this UserRegisterRequest request)
     {
         return new User
@@ -25,13 +27,14 @@ public static class UserContractMapper
     }
     public static UserResponse MapToUserResponse(this User user)
     {
+
         return new UserResponse
         {
             Id = user.Id,
             Username = user.Username,
             Email = user.Email,
             PhoneNumber = user.PhoneNumber,
-            Plans = user.UserPlans.Select(up => new PlanResponse{ Id = up.PlanId, Title = up.Plan!.Title.ToString() }).ToList(),
+            Plans = user.UserPlans.Select(up => new UserPlanRes { Id = up.PlanId, Title = up.Plan!.Title.ToString() }).ToList(),
         };
     }
     public static UserRes MapToUserForUserPlanResponse(this User user)
