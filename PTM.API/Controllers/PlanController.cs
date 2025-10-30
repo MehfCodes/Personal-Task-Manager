@@ -23,7 +23,7 @@ namespace PTM.API.Controllers
         /// </summary>
         /// <param name="request">Plan details.</param>
         /// <returns>The created plan.</returns>
-        [Authorize(Roles = "AdminOnly")]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [SwaggerOperation(Summary = "Add new plan", Description = "Creates a new plan and returns it.")]
         [ProducesResponseType(typeof(ApiResponse<PlanResponse>), StatusCodes.Status201Created)]
@@ -40,7 +40,7 @@ namespace PTM.API.Controllers
         /// </summary>
         /// <param name="id">Plan unique identifier.</param>
         /// <returns>The plan if found.</returns>
-        [Authorize(Roles = "AdminOrUser")]
+        [Authorize(Roles = "Admin,User")]
         [HttpGet("{id:guid}")]
         [SwaggerOperation(Summary = "Get plan by ID", Description = "Returns the plan with the specified ID.")]
         [ProducesResponseType(typeof(ApiResponse<PlanResponse>), StatusCodes.Status200OK)]
@@ -71,7 +71,7 @@ namespace PTM.API.Controllers
         /// <param name="id">Plan unique identifier.</param>
         /// <param name="request">Updated plan details.</param>
         /// <returns>The updated plan.</returns>
-        [Authorize(Roles = "AdminOnly")]
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id:guid}")]
         [SwaggerOperation(Summary = "Update plan", Description = "Updates an existing plan.")]
         [ProducesResponseType(typeof(ApiResponse<PlanResponse>), StatusCodes.Status200OK)]
@@ -88,7 +88,7 @@ namespace PTM.API.Controllers
         /// </summary>
         /// <param name="id">Plan unique identifier.</param>
         /// <returns>Status message.</returns>
-        [Authorize(Roles = "AdminOnly")]
+        [Authorize(Roles = "Admin")]
         [HttpPatch("{id:guid}/deactive")]
         [SwaggerOperation(Summary = "Deactivate plan", Description = "Deactivates the specified plan.")]
         [ProducesResponseType(typeof(ApiResponse<MessageResponse>), StatusCodes.Status200OK)]
@@ -105,7 +105,7 @@ namespace PTM.API.Controllers
         /// </summary>
         /// <param name="id">Plan unique identifier.</param>
         /// <returns>Status message.</returns>
-        [Authorize(Roles = "AdminOnly")]
+        [Authorize(Roles = "Admin")]
         [HttpPatch("{id:guid}/active")]
         [SwaggerOperation(Summary = "Activate plan", Description = "Activates the specified plan.")]
         [ProducesResponseType(typeof(ApiResponse<MessageResponse>), StatusCodes.Status200OK)]

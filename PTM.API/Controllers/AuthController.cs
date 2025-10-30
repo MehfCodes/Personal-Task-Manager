@@ -60,9 +60,9 @@ namespace PTM.API.Controllers
         /// </summary>
         /// <param name="request">Refresh token request data.</param>
         /// <returns>New access and refresh token.</returns>
-        [Authorize(Roles = "Admin,User")]
-        [HttpPost("refresh")]
+
         [AllowAnonymous]
+        [HttpPost("refresh")]
         [SwaggerOperation(Summary = "Refresh JWT token", Description = "Generates new access token using refresh token.")]
         [ProducesResponseType(typeof(ApiResponse<RefreshTokenResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<string>), StatusCodes.Status401Unauthorized)]

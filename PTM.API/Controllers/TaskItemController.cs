@@ -8,7 +8,7 @@ using PTM.Contracts.Response.TaskItem;
 namespace PTM.API.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = "AdminOrUser")]
+    [Authorize(Roles = "Admin,User")]
     [ApiController]
     public class TaskItemController : ControllerBase
     {

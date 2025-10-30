@@ -8,7 +8,7 @@ using PTM.Contracts.Response.UserPlan;
 namespace PTM.API.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = "AdminOrUser")]
+    [Authorize(Roles = "Admin,User")]
     [ApiController]
     public class UserPlanController : ControllerBase
     {

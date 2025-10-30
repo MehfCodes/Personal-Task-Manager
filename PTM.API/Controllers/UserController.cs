@@ -7,7 +7,7 @@ using PTM.Contracts.Response;
 namespace PTM.API.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Roles = "AdminOnly")]
+    [Authorize(Roles = "Admin")]
     [ApiController]
     public class UserController : ControllerBase
     {
