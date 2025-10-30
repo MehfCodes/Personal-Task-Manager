@@ -56,9 +56,9 @@ public class UserPlanService : BaseService, IUserPlanService
             ExpiredAt = DateTime.UtcNow.AddDays(plan.DurationDays)
 
         };
-        await userPlanRepository.AddAsync(purchasedPlan);
+        var record = await userPlanRepository.AddAsync(purchasedPlan);
         logger.LogInformation("User {UserId} purchased the Plan {PlanId} at {Time}", purchasedPlan.UserId, purchasedPlan.PlanId, DateTime.UtcNow);
-        return purchasedPlan.MapToUserPlanWithPlanDetailResponse();
+        return record.MapToUserPlanWithPlanDetailResponse();
     }
 
     public async Task<UserPlanResponseDetail> GetUserPlanById(Guid userPlanId)
@@ -70,7 +70,7 @@ public class UserPlanService : BaseService, IUserPlanService
 
     public async Task<UserPlanResponseDetail> GetActiveUserPlanByUserId(Guid userId)
     {
-        var user = await userRepository.GetByIdAsync(userId, u => u.UserPlans);
+        var user = await userRepository.GetUserbyIdWithPlans(userId);
         if (user is null) throw new NotFoundException("User");
         var activeUserPlan = user.UserPlans.Where(up => up.IsActive == true && up.ExpiredAt > DateTime.UtcNow).FirstOrDefault();
         if (activeUserPlan is null) throw new NotFoundException("User plan");

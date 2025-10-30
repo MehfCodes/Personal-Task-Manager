@@ -17,9 +17,9 @@ public class ActiveUserPlanPolicy : IUserPlanPolicy<Guid>
 
     public async Task Validate(Guid userId)
     {
-        var user = await userRepository.GetByIdAsync(userId, u => u.UserPlans);
+        var user = await userRepository.GetUserbyIdWithPlans(userId);
         if (user is null) throw new NotFoundException("User");
-        var activeUserPlan = user.UserPlans.Where(up => up.IsActive == true && up.ExpiredAt > DateTime.UtcNow && up.Plan!.ToString() != "Free").FirstOrDefault();
-        if (activeUserPlan is null) throw new BusinessRuleException("You already have a active plan, please deactive it and then purchase new one.");
+        var activeUserPlan = user.UserPlans.Any(up => up.IsActive == true && up.ExpiredAt > DateTime.UtcNow && up.Plan!.Title.ToString() != "Free");
+        if (activeUserPlan) throw new BusinessRuleException("You already have a active plan, please deactive it and then purchase new one.");
     }
 }

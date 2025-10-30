@@ -37,6 +37,7 @@ public class TaskItemService : BaseService, ITaskItemService
         var userPlan = await userPlanService.GetActiveUserPlanByUserId(userId);
         await compositePolicy.ValidateAll(userId, userPlan);
         var newTask = request.MapToTaskItem();
+        newTask.UserId = userId;
         var record = await repository.AddAsync(newTask);
         return record.MapToTaskItemResponse();
     }

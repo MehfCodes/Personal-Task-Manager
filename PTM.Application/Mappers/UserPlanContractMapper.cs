@@ -42,7 +42,7 @@ public static class UserPlanContractMapper
             IsActive = userPlan.IsActive,
             PurchasedAt = userPlan.PurchasedAt,
             ExpiredAt = userPlan.ExpiredAt,
-            Plan = userPlan.Plan!.MapToPlanResponse(),
+            Plan = userPlan.Plan?.MapToPlanResponse() ?? null,
         };
     }
     public static IEnumerable<UserPlanResponseDetail> MapToUserPlansResponse(this IEnumerable<UserPlan> userPlans) => userPlans.Select(MapToUserPlanWithPlanDetailResponse);
