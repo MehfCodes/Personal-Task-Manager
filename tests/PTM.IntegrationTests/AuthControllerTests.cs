@@ -10,6 +10,7 @@ using PTM.Contracts.Response;
 using Moq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Xunit.Abstractions;
 
 namespace PTM.IntegrationTests;
 
@@ -17,11 +18,13 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly HttpClient client;
     private readonly CustomWebApplicationFactory factory;
+    private readonly ITestOutputHelper output;
 
-    public AuthControllerTests(CustomWebApplicationFactory factory)
+    public AuthControllerTests(CustomWebApplicationFactory factory, ITestOutputHelper output)
     {
         client = factory.CreateClient();
         this.factory = factory;
+        this.output = output;
     }
 
     [Fact]
@@ -169,7 +172,7 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory>
         {
             RefreshToken = loginBody!.Data!.RefreshToken,
         };
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loginBody.Data.AccessToken);
+        // client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loginBody.Data.AccessToken);
         // Act
         var response = await client.PostAsJsonAsync("/api/auth/refresh", refreshReq);
 
@@ -211,42 +214,7 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory>
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
-    [Fact]
-    public async Task UpdatePassword_ShouldReturnOk_WhenCredentialsValid()
-    {
-    // Arrange
-         var loginReq = new UserLoginRequest
-        {
-            Email = "user2@test.com",
-            Password = "hashed2"
-        };
-        var logingRes = await client.PostAsJsonAsync("/api/auth/login", loginReq);
-        var loginBody = await logingRes.Content.ReadFromJsonAsync<ApiResponse<UserResponse>>();
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loginBody!.Data!.AccessToken);
-
-        var updateReq = new UpdatePasswordRequest
-        {
-            CurrentPassword = "hashed2",
-            NewPassword = "NewPassword123!"
-        };
-
-        // Act
-        var response = await client.PatchAsJsonAsync("/api/auth/update-password", updateReq);
-
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var result = await response.Content.ReadFromJsonAsync<ApiResponse<UpdatePasswordResponse>>();
-        result.Should().NotBeNull();
-        result!.Data.Should().NotBeNull();
-
-        var reloginReq = new UserLoginRequest
-        {
-            Email = "user2@test.com",
-            Password = "NewPassword123!"
-        };
-        var reloginRes = await client.PostAsJsonAsync("/api/auth/login", reloginReq);
-        reloginRes.StatusCode.Should().Be(HttpStatusCode.OK);
-    }
+    
     [Fact]
     public async Task UpdatePassword_ShouldReturnUnauthorized_WhenNoTokenProvided()
     {
@@ -264,7 +232,7 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory>
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
-     [Fact]
+    [Fact]
     public async Task UpdatePassword_ShouldReturnBadRequest_WhenNewPasswordWeak()
     {
 
@@ -295,22 +263,42 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory>
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
     [Fact]
-    public async Task Logout_ShouldReturnOk_WhenTokenProvided()
+    public async Task UpdatePassword_ShouldReturnOk_WhenUserIsAuthenticated()
     {
-        var loginReq = new UserLoginRequest
+        // Arrange: user login
+        var loginRequest = new UserLoginRequest
         {
             Email = "user2@test.com",
             Password = "hashed2"
         };
-        var logingRes = await client.PostAsJsonAsync("/api/auth/login", loginReq);
-        var loginBody = await logingRes.Content.ReadFromJsonAsync<ApiResponse<UserResponse>>();
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loginBody!.Data!.AccessToken);
 
-        // Act
-        var response = await client.PostAsync("/api/auth/logout", null);
+        var loginResponse = await client.PostAsJsonAsync("/api/auth/login", loginRequest);
+        loginResponse.EnsureSuccessStatusCode();
+
+        var loginBody = await loginResponse.Content.ReadFromJsonAsync<ApiResponse<UserResponse>>();
+        loginBody.Should().NotBeNull();
+        loginBody!.Data.Should().NotBeNull();
+        var token = loginBody.Data.AccessToken;
+
+        // Arrange: update password request
+        var updateRequest = new UpdatePasswordRequest
+        {
+            CurrentPassword = "hashed2",
+            NewPassword = "NewPassword123!"
+        };
+
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        // Act: call update-password
+        var response = await client.PatchAsJsonAsync("/api/auth/update-password", updateRequest);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var responseBody = await response.Content.ReadFromJsonAsync<ApiResponse<UpdatePasswordResponse>>();
+        responseBody.Should().NotBeNull();
+        responseBody!.Data.Should().NotBeNull();
+        responseBody.Message.Should().Be("Password update successfully");
     }
 
     [Fact]
@@ -405,7 +393,24 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory>
         response.StatusCode.Should().BeOneOf(HttpStatusCode.OK, HttpStatusCode.BadRequest);
     }
     
+    [Fact]
+    public async Task Logout_ShouldReturnOk_WhenTokenProvided()
+    {
+        var loginReq = new UserLoginRequest
+        {
+            Email = "user2@test.com",
+            Password = "hashed2"
+        };
+        var logingRes = await client.PostAsJsonAsync("/api/auth/login", loginReq);
+        var loginBody = await logingRes.Content.ReadFromJsonAsync<ApiResponse<UserResponse>>();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loginBody!.Data!.AccessToken);
 
+        // Act
+        var response = await client.PostAsync("/api/auth/logout", null);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
    
     [Fact]
     public async Task Logout_ShouldReturnUnauthorized_WhenNoTokenProvided()

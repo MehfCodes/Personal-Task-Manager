@@ -65,9 +65,9 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IDisp
 
         db.SaveChanges();
         db.Plans.AddRange(
-            new Plan { Id = Guid.NewGuid(), Title = PlanTitle.Free, Description="Free Plan", Price=0, MaxTasks=5, DurationDays=7 },
-            new Plan { Id = Guid.NewGuid(), Title = PlanTitle.Premium, Description="Premium Plan", Price=10, MaxTasks=20, DurationDays=30 },
-            new Plan { Id = Guid.NewGuid(), Title = PlanTitle.Business, Description="Business Plan", Price=20, MaxTasks=50, DurationDays=465 }
+            new Plan { Id = Guid.NewGuid(), Title = PlanTitle.Free, Description="Free Plan", Price=0, MaxTasks=5, DurationDays=7, IsActive = true },
+            new Plan { Id = Guid.NewGuid(), Title = PlanTitle.Premium, Description="Premium Plan", Price=10, MaxTasks=20, DurationDays=30, IsActive = true },
+            new Plan { Id = Guid.NewGuid(), Title = PlanTitle.Business, Description="Business Plan", Price=20, MaxTasks=50, DurationDays=465, IsActive = true }
         );
         db.SaveChanges();
 
