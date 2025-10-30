@@ -9,4 +9,5 @@ public interface IUserService
     Task<UserResponse> GetByIdAsync(Guid id);
     Task<IEnumerable<UserResponse>> GetAllAsync();
     Task<UserResponse> UpdateAsync(Guid id, UserUpdateRequest user);
+    Task<MessageResponse> PromoteToAdminAsync(Guid id);
 }

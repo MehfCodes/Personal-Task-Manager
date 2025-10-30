@@ -37,4 +37,12 @@ public class UserService : BaseService ,IUserService
         await repository.UpdateAsync(updated);
         return updated.MapToUserResponse();
     }
+    public async Task<MessageResponse> PromoteToAdminAsync(Guid id)
+    {
+        var record = await repository.GetByIdAsync(id);
+        if (record is null) throw new NotFoundException("User");
+        record.Role = UserRole.Admin;
+        await repository.UpdateAsync(record);
+        return new MessageResponse { Massage = "User promoted to Admin successfully." };
+    }
 }

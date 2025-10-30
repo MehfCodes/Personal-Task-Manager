@@ -63,5 +63,21 @@ namespace PTM.API.Controllers
             var res = await userService.UpdateAsync(id, request);
             return Ok(ApiResponse<UserResponse>.SuccessResponse(res, "User updated successfully", HttpContext.TraceIdentifier));
         }
+
+         /// <summary>
+        /// Promoted a user to admin.
+        /// </summary>
+        /// <param name="id">User Id.</param>
+        /// <returns>Status Message.</returns>
+        /// <response code="200">Returns the Successfull Message.</response>
+        /// <response code="404">If the user is not found.</response>
+        [HttpPatch("PromoteToAdmin/{id:guid}")]
+        [ProducesResponseType(typeof(ApiResponse<MessageResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> PromoteToAdmin(Guid id)
+        {
+            var res = await userService.PromoteToAdminAsync(id);
+            return Ok(ApiResponse<MessageResponse>.SuccessResponse(res, "User promoted successfully", HttpContext.TraceIdentifier));
+        }
     }
 }
