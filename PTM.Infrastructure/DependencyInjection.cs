@@ -1,6 +1,9 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -85,12 +88,19 @@ public static class DependencyInjection
                 },
                 OnTokenValidated = async context =>
                 {
+                    var endpoint = context.HttpContext.GetEndpoint();
+                    var adminOnly = endpoint?.Metadata?.GetMetadata<IAuthorizeData>()?.Roles?.Contains("AdminOnly") ?? false;
                     var claims = context.Principal?.Claims;
-                    var userIdClaim = claims?.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
+                    var userIdClaim = claims?.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub || c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
                     var jti = claims?.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti)?.Value;
-                    if (string.IsNullOrEmpty(userIdClaim))
+                    var tokenRole = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Role || c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+                    if(tokenRole != "Admin" && adminOnly)
                     {
-                        throw new UnauthorizedException("Invalid Token Claims!");
+                        throw new UnauthorizedException("Access Denied!");
+                    }
+                    else if (string.IsNullOrEmpty(userIdClaim))
+                    {
+                        throw new UnauthorizedException("Invalid token claims!");
                     }
                     var userRepository = context.HttpContext.RequestServices.GetRequiredService<IUserRepository>();
                     var refreshTokenRepository = context.HttpContext.RequestServices.GetRequiredService<IRefreshTokenRepository>();
