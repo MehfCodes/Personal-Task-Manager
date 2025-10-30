@@ -98,11 +98,11 @@ public static class DependencyInjection
                     var userIdClaim = claims?.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub || c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
                     var jti = claims?.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti)?.Value;
                     var tokenRole = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Role || c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
-                    if (tokenRole != "Admin" && adminOnly)
-                    {
-                        throw new UnauthorizedException("Access Denied!");
-                    }
-                    else if (string.IsNullOrEmpty(userIdClaim))
+                    // if (tokenRole != "Admin" && adminOnly)
+                    // {
+                    //     throw new UnauthorizedException("Access Denied!");
+                    // }
+                    if (string.IsNullOrEmpty(userIdClaim))
                     {
                         throw new UnauthorizedException("Invalid token claims!");
                     }
