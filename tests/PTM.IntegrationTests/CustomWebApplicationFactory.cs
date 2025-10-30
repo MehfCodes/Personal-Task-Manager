@@ -58,7 +58,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IDisp
 
         db.Users.AddRange(
             new User { Id = Guid.NewGuid(), Email = "user1@test.com", Password = password, PhoneNumber = "09110000001", Username="user1" },
-            new User { Id = userId1, Email = "user2@test.com", Password = password2, PhoneNumber = "09110000002", Username="user2" },
+            new User { Id = userId1, Email = "user2@test.com", Password = password2, PhoneNumber = "09110000002", Username="user2",Role = UserRole.User },
             new User { Id = Guid.NewGuid(), Email = "user3@test.com", Password = "hashed3", PhoneNumber = "09110000003", Username="user3" },
             new User { Id = Guid.NewGuid(), Email = "user4@test.com", Password = "hashed4", PhoneNumber = "09110000004", Username="user4" }
         );
@@ -67,8 +67,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IDisp
         db.Plans.AddRange(
             new Plan { Id = Guid.NewGuid(), Title = PlanTitle.Free, Description="Free Plan", Price=0, MaxTasks=5, DurationDays=7 },
             new Plan { Id = Guid.NewGuid(), Title = PlanTitle.Premium, Description="Premium Plan", Price=10, MaxTasks=20, DurationDays=30 },
-            new Plan { Id = Guid.NewGuid(), Title = PlanTitle.Business, Description="Business Plan", Price=20, MaxTasks=50, DurationDays=465 },
-            new Plan { Id = Guid.NewGuid(), Title = PlanTitle.Premium, Description="Premium Plan", Price=30, MaxTasks=30, DurationDays=30 }
+            new Plan { Id = Guid.NewGuid(), Title = PlanTitle.Business, Description="Business Plan", Price=20, MaxTasks=50, DurationDays=465 }
         );
         db.SaveChanges();
 
