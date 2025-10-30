@@ -58,7 +58,7 @@ namespace PTM.API.Controllers
         /// <returns>Status message.</returns>
         /// <response code="200">Returns a message.</response>
         /// <response code="404">If the plan is not found.</response>
-        [HttpPut("{id:guid}")]
+        [HttpPatch("{id:guid}/deactive")]
         [ProducesResponseType(typeof(ApiResponse<MessageResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Deactive(Guid id)
