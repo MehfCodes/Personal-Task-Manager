@@ -17,6 +17,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IDisp
 {
     private bool _dbCreated;
     private Guid userId1;
+    // private Guid userId2;
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -35,6 +36,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IDisp
             mockRequestContext.Setup(r => r.GetIpAddress()).Returns("127.0.0.1");
             mockRequestContext.Setup(r => r.GetUserAgent()).Returns("IntegrationTest");
             mockRequestContext.Setup(r => r.GetUserId()).Returns(userId1);
+            // mockRequestContext.Setup(r => r.GetUserId()).Returns(userId2);
             services.AddSingleton(mockRequestContext.Object);
             var sp = services.BuildServiceProvider();
             using var scope = sp.CreateScope();
@@ -57,9 +59,9 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IDisp
         var password2 = hasher.HashPassword("hashed2");
 
         db.Users.AddRange(
-            new User { Id = Guid.NewGuid(), Email = "user1@test.com", Password = password, PhoneNumber = "09110000001", Username="user1" },
+            new User { Id = Guid.NewGuid(), Email = "user1@test.com", Password = password, PhoneNumber = "09110000001", Username="user1", Role = UserRole.Admin },
             new User { Id = userId1, Email = "user2@test.com", Password = password2, PhoneNumber = "09110000002", Username="user2",Role = UserRole.User },
-            new User { Id = Guid.NewGuid(), Email = "user3@test.com", Password = "hashed3", PhoneNumber = "09110000003", Username="user3" },
+            new User { Id =Guid.NewGuid(), Email = "user3@test.com", Password = "hashed3", PhoneNumber = "09110000003", Username="user3", Role = UserRole.Admin },
             new User { Id = Guid.NewGuid(), Email = "user4@test.com", Password = "hashed4", PhoneNumber = "09110000004", Username="user4" }
         );
 

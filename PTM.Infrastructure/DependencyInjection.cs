@@ -84,17 +84,21 @@ public static class DependencyInjection
                     {
                         throw new UnauthorizedException("Invalid authentication information.");
                     }
+                    else if (context.Exception is SecurityTokenValidationException)
+                    {
+                        throw new UnauthorizedException("Invalid authentication information.");
+                    }
                     return;
                 },
                 OnTokenValidated = async context =>
                 {
                     var endpoint = context.HttpContext.GetEndpoint();
-                    var adminOnly = endpoint?.Metadata?.GetMetadata<IAuthorizeData>()?.Roles?.Contains("AdminOnly") ?? false;
+                    var adminOnly = endpoint?.Metadata?.GetMetadata<IAuthorizeData>()?.Roles?.Contains("Admin") ?? false;
                     var claims = context.Principal?.Claims;
                     var userIdClaim = claims?.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub || c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
                     var jti = claims?.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti)?.Value;
                     var tokenRole = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Role || c.Type == "http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
-                    if(tokenRole != "Admin" && adminOnly)
+                    if (tokenRole != "Admin" && adminOnly)
                     {
                         throw new UnauthorizedException("Access Denied!");
                     }
@@ -117,7 +121,12 @@ public static class DependencyInjection
                     {
                         throw new UnauthorizedException("Session is no longer valid.");
                     }
+                },
+                OnForbidden = async context =>
+                {
+                    throw new UnauthorizedException("Forbiden, Access Denied!");
                 }
+
             };
         });
 
