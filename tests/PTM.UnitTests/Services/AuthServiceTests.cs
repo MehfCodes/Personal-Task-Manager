@@ -24,6 +24,7 @@ public class AuthServiceTests
     private readonly Mock<IPasswordHasher> passwordHasherMock = new();
     private readonly Mock<IRequestContext> requestContextMock = new();
     private readonly Mock<IServiceProvider> serviceProviderMock = new();
+    private readonly Mock<IUserPlanService> userPlanServiceMock = new();
     private readonly Mock<ILogger<AuthService>> loggerMock = new();
     private readonly AuthService authService;
 
@@ -36,6 +37,7 @@ public class AuthServiceTests
             requestContextMock.Object,
             serviceProviderMock.Object,
             passwordHasherMock.Object,
+            userPlanServiceMock.Object,
             loggerMock.Object
             );
     }
@@ -61,6 +63,7 @@ public class AuthServiceTests
         passwordHasherMock.Setup(ph => ph.HashPassword(req.Password)).Returns("hashed-password");
         // passwordHasherMock.Setup(ph => ph.VerifyPassword(It.IsAny<string>(), It.IsAny<string>())).Returns(true);
         userRepoMock.Setup(r => r.AddAsync(It.IsAny<User>())).ReturnsAsync((User u) => u);
+        userPlanServiceMock.Setup(up => up.AssignFreePLanToNewUser(user.Id)).ReturnsAsync(It.IsAny<UserPlan>());
         tokenService.Setup(ts => ts.GenerateTokenPair(It.IsAny<User>()))
         .ReturnsAsync(new TokenPair
         {

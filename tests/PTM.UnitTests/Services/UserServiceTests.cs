@@ -55,7 +55,7 @@ public class UserServiceTests
             Email = "email@email.com",
             Password = "123"
         };
-        userRepositoryMock.Setup(repo => repo.GetByIdAsync(user.Id)).ReturnsAsync(user);
+        userRepositoryMock.Setup(repo => repo.GetUserbyIdWithPlans(user.Id)).ReturnsAsync(user);
         var result = await userService.GetByIdAsync(user.Id);
 
         result.Should().NotBe(null);
