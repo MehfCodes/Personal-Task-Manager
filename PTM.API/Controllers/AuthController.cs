@@ -27,8 +27,8 @@ namespace PTM.API.Controllers
         /// </summary>
         /// <param name="request">User registration details.</param>
         /// <returns>User information after successful registration.</returns>
-        [HttpPost("register")]
         [AllowAnonymous]
+        [HttpPost("register")]
         [SwaggerOperation(Summary = "Register new user", Description = "Creates a new user account.")]
         [ProducesResponseType(typeof(ApiResponse<UserResponse>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse<string>), StatusCodes.Status400BadRequest)]
@@ -44,8 +44,8 @@ namespace PTM.API.Controllers
         /// </summary>
         /// <param name="request">Login credentials.</param>
         /// <returns>User information with access token.</returns>
-        [HttpPost("login")]
         [AllowAnonymous]
+        [HttpPost("login")]
         [SwaggerOperation(Summary = "User login", Description = "Logs user in and returns JWT token.")]
         [ProducesResponseType(typeof(ApiResponse<UserResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<string>), StatusCodes.Status401Unauthorized)]
@@ -60,6 +60,7 @@ namespace PTM.API.Controllers
         /// </summary>
         /// <param name="request">Refresh token request data.</param>
         /// <returns>New access and refresh token.</returns>
+        [Authorize(Roles = "Admin,User")]
         [HttpPost("refresh")]
         [AllowAnonymous]
         [SwaggerOperation(Summary = "Refresh JWT token", Description = "Generates new access token using refresh token.")]
@@ -76,6 +77,7 @@ namespace PTM.API.Controllers
         /// </summary>
         /// <param name="request">Password update details.</param>
         /// <returns>Status of password update.</returns>
+        [Authorize(Roles = "Admin,User")]
         [HttpPatch("update-password")]
         [SwaggerOperation(Summary = "Update user password", Description = "Changes the user's password.")]
         [ProducesResponseType(typeof(ApiResponse<UpdatePasswordResponse>), StatusCodes.Status200OK)]
@@ -91,7 +93,7 @@ namespace PTM.API.Controllers
         /// Logout the current user and revoke refresh token.
         /// </summary>
         /// <returns>Logout status.</returns>
-        [Authorize(Roles = "AdminOrUser")]
+        [Authorize(Roles = "Admin,User")]
         [HttpPost("logout")]
         [SwaggerOperation(Summary = "Logout user", Description = "Logs out the current user and revokes refresh token.")]
         [ProducesResponseType(typeof(ApiResponse<LogoutResponse>), StatusCodes.Status200OK)]
@@ -107,6 +109,7 @@ namespace PTM.API.Controllers
         /// </summary>
         /// <param name="request">Email address for reset.</param>
         /// <returns>Confirmation message to check email inbox.</returns>
+        [Authorize(Roles = "Admin,User")]
         [HttpPost("forgot-password")]
         [AllowAnonymous]
         [SwaggerOperation(Summary = "Forgot password", Description = "Sends a reset link to user's email.")]
@@ -123,6 +126,7 @@ namespace PTM.API.Controllers
         /// </summary>
         /// <param name="request">Reset password request data.</param>
         /// <returns>Status of reset action.</returns>
+        [Authorize(Roles = "Admin,User")]
         [HttpPost("reset-password")]
         [AllowAnonymous]
         [SwaggerOperation(Summary = "Reset password", Description = "Resets password using reset token.")]

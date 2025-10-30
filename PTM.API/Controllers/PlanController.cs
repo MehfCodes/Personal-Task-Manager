@@ -55,7 +55,7 @@ namespace PTM.API.Controllers
         /// Get all plans.
         /// </summary>
         /// <returns>List of all plans.</returns>
-        [Authorize(Roles = "AdminOrUser")]
+        [Authorize(Roles = "Admin,User")]
         [HttpGet]
         [SwaggerOperation(Summary = "Get all plans", Description = "Returns all available plans.")]
         [ProducesResponseType(typeof(ApiResponse<IEnumerable<PlanResponse>>), StatusCodes.Status200OK)]
