@@ -1,0 +1,31 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: PTM.API/Dockerfile
+    container_name: ptm-api
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection
+    restart: always
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: ptm-sqlserver
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: ${SA_PASSWORD:-YourStrong!Passw0rd}
+      ACCEPT_EULA: "Y"
+    volumes:
+      - ptm_data:/var/opt/mssql
+    restart: always
+
+volumes:
+  ptm_data:
