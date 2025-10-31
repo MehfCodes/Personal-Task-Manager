@@ -526,6 +526,8 @@ secrets.json
 
 
 appsettings.json
+appsettings.Production.json
+
 
 
 # Publish & Deployment
