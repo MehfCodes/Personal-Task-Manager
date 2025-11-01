@@ -2,7 +2,7 @@ name: CI - PTM Build & Test
 
 on:
   push:
-    branches: main
+    branches: [ main ]
 
 jobs:
   build-and-test:
@@ -12,15 +12,15 @@ jobs:
       sqlserver:
         image: mcr.microsoft.com/mssql/server:2022-latest
         env:
-          SA_PASSWORD: "YourStrong!Passw0rd"
+          SA_PASSWORD: ${{ secrets.SA_PASSWORD }}
           ACCEPT_EULA: "Y"
         ports:
           - 1433:1433
         options: >-
-          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P YourStrong!Passw0rd -Q 'SELECT 1' || exit 1"
+          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P ${{ secrets.SA_PASSWORD }} -Q 'SELECT 1'" 
           --health-interval 10s
           --health-timeout 5s
-          --health-retries 10
+          --health-retries 12
 
     steps:
       - name: Checkout repository
@@ -37,9 +37,15 @@ jobs:
       - name: Build solution
         run: dotnet build PTM.sln --no-restore --configuration Release
 
+      - name: Wait for SQL Server
+        run: |
+          for i in {1..15}; do
+            /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P ${{ secrets.SA_PASSWORD }} -Q "SELECT 1" && break
+            echo "Waiting for SQL Server to be ready..."
+            sleep 5
+          done
+
       - name: Run EF Core migrations
-        env:
-          SA_PASSWORD: ${{ secrets.SA_PASSWORD }}
         run: dotnet ef database update --project PTM.API/PTM.API.csproj
 
       - name: Run Unit Tests
