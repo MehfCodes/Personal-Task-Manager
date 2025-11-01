@@ -1,4 +1,4 @@
-name: CI/CD PTM
+name: Deploy PTM Docker to Render
 
 on:
   push:
@@ -10,30 +10,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Setup .NET 9
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: 9.0.x
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
 
-      - name: Restore dependencies
-        run: dotnet restore PTM.API/PTM.API.csproj
+    - name: Login to Render Docker Registry
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.RENDER_API_KEY }}
+        password: ${{ secrets.RENDER_API_KEY }}
+        registry: registry.render.com
 
-      - name: Build
-        run: dotnet build PTM.API/PTM.API.csproj --configuration Release --no-restore
+    - name: Build Docker image
+      run: |
+        docker build -t registry.render.com/${{ secrets.RENDER_SERVICE_ID }}/ptm:latest .
 
-      - name: Test
-        run: dotnet test PTM.API/PTM.API.csproj --no-build --verbosity normal
+    - name: Push Docker image to Render Registry
+      run: |
+        docker push registry.render.com/${{ secrets.RENDER_SERVICE_ID }}/ptm:latest
 
-      - name: Install Fly CLI
-        run: curl -L https://fly.io/install.sh | sh
-
-      - name: Add Fly CLI to PATH
-        run: echo "$HOME/.fly/bin" >> $GITHUB_PATH
-
-      - name: Deploy to Fly.io
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-        run: fly deploy --remote-only
+    - name: Deploy to Render
+      env:
+        RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+        RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+        ConnectionStrings__DefaultConnection: ${{ secrets.ConnectionStrings__DefaultConnection }}
+      run: |
+        render deploy --service $RENDER_SERVICE_ID
