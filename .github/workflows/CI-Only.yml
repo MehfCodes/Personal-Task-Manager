@@ -1,0 +1,57 @@
+name: CI - PTM Build & Test
+
+on:
+  push:
+    branches: main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          SA_PASSWORD: ${{ secrets.SA_PASSWORD }}
+          ACCEPT_EULA: "Y"
+        ports:
+          - 1433:1433
+        options: >-
+          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P ${{ secrets.SA_PASSWORD }} -Q 'SELECT 1' || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore PTM.sln
+
+      - name: Build solution
+        run: dotnet build PTM.sln --no-restore --configuration Release
+
+      - name: Run EF Core migrations
+        run: dotnet ef database update --project PTM.API/PTM.API.csproj
+
+      - name: Run Unit Tests
+        run: dotnet test tests/PTM.UnitTests/PTM.UnitTests.csproj --no-build --configuration Release --logger "trx"
+
+      - name: Run Integration Tests
+        env:
+          ConnectionStrings__DefaultConnection: "Server=localhost,1433;Database=PTM_Test;User Id=sa;Password=${{ secrets.SA_PASSWORD }};TrustServerCertificate=True"
+          ASPNETCORE_ENVIRONMENT: "Test"
+        run: dotnet test tests/PTM.IntegrationTests/PTM.IntegrationTests.csproj --no-build --configuration Release --logger "trx"
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: '**/TestResults/*.trx'
