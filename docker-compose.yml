@@ -12,7 +12,7 @@ services:
       - db
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__DefaultConnection
+      - ConnectionStrings__DefaultConnection=Server=db,1433;Database=PTM;User Id=sa;Password=MyStrong!Passw0rd;TrustServerCertificate=True;
     restart: always
 
   db:
