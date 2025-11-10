@@ -12,15 +12,15 @@ jobs:
       sqlserver:
         image: mcr.microsoft.com/mssql/server:2022-latest
         env:
-          SA_PASSWORD: "YourStrong!Passw0rd"
+          SA_PASSWORD: ${{ secrets.SA_PASSWORD }}
           ACCEPT_EULA: "Y"
         ports:
           - 1433:1433
         options: >-
-          --health-cmd "nc -z localhost 1433"
+          --health-cmd "timeout 1 bash -c '</dev/tcp/127.0.0.1/1433' || exit 1"
           --health-interval 10s
           --health-timeout 5s
-          --health-retries 12
+          --health-retries 20
 
     steps:
       - name: Checkout repository
@@ -31,11 +31,6 @@ jobs:
         with:
           dotnet-version: 9.0.x
 
-      - name: Install EF Core CLI
-        run: dotnet tool install --global dotnet-ef
-        env:
-          PATH: $PATH:/home/runner/.dotnet/tools
-
       - name: Restore dependencies
         run: dotnet restore PTM.sln
 
@@ -44,27 +39,23 @@ jobs:
 
       - name: Wait for SQL Server
         run: |
-          for i in {1..30}; do
-            nc -z localhost 1433 && echo "SQL Server is up!" && break
+          for i in {1..40}; do
+            nc -z 127.0.0.1 1433 && echo "✅ SQL Server is ready!" && break
             echo "Waiting for SQL Server..."
             sleep 5
           done
 
       - name: Run EF Core migrations
         env:
-          ConnectionStrings__DefaultConnection: "Server=localhost,1433;Database=PTM;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True"
+          ConnectionStrings__DefaultConnection: "Server=127.0.0.1,1433;Database=PTM;User Id=sa;Password=${{ secrets.SA_PASSWORD }};TrustServerCertificate=True"
         run: dotnet ef database update --project PTM.API/PTM.API.csproj
-
-      - name: Create Test Database
-        run: |
-          /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "YourStrong!Passw0rd" -Q "CREATE DATABASE PTM_Test"
 
       - name: Run Unit Tests
         run: dotnet test tests/PTM.UnitTests/PTM.UnitTests.csproj --no-build --configuration Release --logger "trx"
 
       - name: Run Integration Tests
         env:
-          ConnectionStrings__DefaultConnection: "Server=localhost,1433;Database=PTM_Test;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True"
+          ConnectionStrings__DefaultConnection: "Server=127.0.0.1,1433;Database=PTM_Test;User Id=sa;Password=${{ secrets.SA_PASSWORD }};TrustServerCertificate=True"
           ASPNETCORE_ENVIRONMENT: "Test"
         run: dotnet test tests/PTM.IntegrationTests/PTM.IntegrationTests.csproj --no-build --configuration Release --logger "trx"
 
