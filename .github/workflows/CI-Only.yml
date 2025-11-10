@@ -37,6 +37,11 @@ jobs:
       - name: Build solution
         run: dotnet build PTM.sln --no-restore --configuration Release
 
+      - name: Install dotnet-ef tool
+        run: |
+          dotnet tool install --global dotnet-ef --version 9.0.0
+          echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
       - name: Wait for SQL Server
         run: |
           for i in {1..40}; do
