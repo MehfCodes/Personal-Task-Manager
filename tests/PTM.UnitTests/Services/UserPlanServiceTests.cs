@@ -217,7 +217,7 @@ public class UserPlanServiceTests
             }
         };
 
-        userRepoMock.Setup(r => r.GetByIdAsync(userId, It.IsAny<Expression<Func<User, object>>[]>())).ReturnsAsync(user);
+        userRepoMock.Setup(r => r.GetUserbyIdWithPlans(userId)).ReturnsAsync(user);
 
         var result = await userPlanService.GetActiveUserPlanByUserId(userId);
 
@@ -258,7 +258,7 @@ public class UserPlanServiceTests
             }
         };
 
-        userRepoMock.Setup(r => r.GetByIdAsync(userId, It.IsAny<Expression<Func<User, object>>[]>())).ReturnsAsync(user);
+        userRepoMock.Setup(r => r.GetUserbyIdWithPlans(userId)).ReturnsAsync(user);
 
         var exception = await Assert.ThrowsAsync<NotFoundException>(() => userPlanService.GetActiveUserPlanByUserId(userId));
 
