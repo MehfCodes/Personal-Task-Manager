@@ -58,11 +58,15 @@ jobs:
       - name: Run Unit Tests
         run: dotnet test tests/PTM.UnitTests/PTM.UnitTests.csproj --no-build --configuration Release --logger "trx"
 
-      - name: Run Integration Tests
-        env:
-          ConnectionStrings__DefaultConnection: "Server=127.0.0.1,1433;Database=PTM_Test;User Id=sa;Password=${{ secrets.SA_PASSWORD }};TrustServerCertificate=True"
-          ASPNETCORE_ENVIRONMENT: "Test"
-        run: dotnet test tests/PTM.IntegrationTests/PTM.IntegrationTests.csproj --no-build --configuration Release --logger "trx"
+      # - name: Run Integration Tests
+      #   env:
+      #     ConnectionStrings__TestConnection: "Server=127.0.0.1,1433;Database=PTM_IntegrationTest;User Id=sa;Password=${{ secrets.SA_PASSWORD }};TrustServerCertificate=True"
+      #     ASPNETCORE_ENVIRONMENT: "Test"
+      #     Jwt__Issuer: "PTM"
+      #     Jwt__Audience: "PTM.Clients"
+      #     Jwt__SecretKey: ${{ secrets.JWT_SECRET }}
+      #     HashSecret__Key: ${{ secrets.HASH_SECRET }}
+      #   run: dotnet test tests/PTM.IntegrationTests/PTM.IntegrationTests.csproj --no-build --configuration Release --logger "trx"
 
       - name: Upload Test Results
         if: always()

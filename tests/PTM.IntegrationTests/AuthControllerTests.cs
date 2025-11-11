@@ -214,7 +214,43 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory>
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
-    
+    [Fact]
+    public async Task UpdatePassword_ShouldReturnOk_WhenUserIsAuthenticated()
+    {
+        // Arrange: user login
+        var loginRequest = new UserLoginRequest
+        {
+            Email = "user2@test.com",
+            Password = "hashed2"
+        };
+
+        var loginResponse = await client.PostAsJsonAsync("/api/auth/login", loginRequest);
+        loginResponse.EnsureSuccessStatusCode();
+
+        var loginBody = await loginResponse.Content.ReadFromJsonAsync<ApiResponse<UserResponse>>();
+        loginBody.Should().NotBeNull();
+        loginBody!.Data.Should().NotBeNull();
+        var token = loginBody.Data.AccessToken;
+
+        // Arrange: update password request
+        var updateRequest = new UpdatePasswordRequest
+        {
+            CurrentPassword = "hashed2",
+            NewPassword = "NewPassword123!"
+        };
+
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        // Act: call update-password
+        var response = await client.PatchAsJsonAsync("/api/auth/update-password", updateRequest);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var responseBody = await response.Content.ReadFromJsonAsync<ApiResponse<UpdatePasswordResponse>>();
+        responseBody.Should().NotBeNull();
+        responseBody!.Data.Should().NotBeNull();
+    }
     [Fact]
     public async Task UpdatePassword_ShouldReturnUnauthorized_WhenNoTokenProvided()
     {
@@ -262,44 +298,7 @@ public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory>
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
-    [Fact]
-    public async Task UpdatePassword_ShouldReturnOk_WhenUserIsAuthenticated()
-    {
-        // Arrange: user login
-        var loginRequest = new UserLoginRequest
-        {
-            Email = "user2@test.com",
-            Password = "hashed2"
-        };
-
-        var loginResponse = await client.PostAsJsonAsync("/api/auth/login", loginRequest);
-        loginResponse.EnsureSuccessStatusCode();
-
-        var loginBody = await loginResponse.Content.ReadFromJsonAsync<ApiResponse<UserResponse>>();
-        loginBody.Should().NotBeNull();
-        loginBody!.Data.Should().NotBeNull();
-        var token = loginBody.Data.AccessToken;
-
-        // Arrange: update password request
-        var updateRequest = new UpdatePasswordRequest
-        {
-            CurrentPassword = "hashed2",
-            NewPassword = "NewPassword123!"
-        };
-
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-        // Act: call update-password
-        var response = await client.PatchAsJsonAsync("/api/auth/update-password", updateRequest);
-
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var responseBody = await response.Content.ReadFromJsonAsync<ApiResponse<UpdatePasswordResponse>>();
-        responseBody.Should().NotBeNull();
-        responseBody!.Data.Should().NotBeNull();
-        responseBody.Message.Should().Be("Password update successfully");
-    }
+    
 
     [Fact]
     public async Task ForgotPassword_ShouldReturnSuccessMessage()

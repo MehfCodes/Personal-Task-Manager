@@ -527,6 +527,7 @@ secrets.json
 
 # appsettings.json
 appsettings.Production.json
+appsettings.Testing.json
 
 
 
